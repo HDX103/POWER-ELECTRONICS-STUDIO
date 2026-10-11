@@ -295,6 +295,9 @@ export function SchematicView({
             <line x1="300" y1="80" x2="300" y2="240" stroke="#334155" strokeWidth="2" />
             <path d="M 300 240 L 300 80 L 450 80 L 580 80 L 580 240 L 300 240" fill="none" style={flowStyle(curPaths.path_diode_on, '#eab308')} />
 
+            <line x1="540" y1="140" x2="540" y2="200" stroke="#38bdf8" strokeWidth="2" />
+            <line x1="545" y1="140" x2="545" y2="200" stroke="#38bdf8" strokeWidth="2" />
+            <text x="542.5" y="135" fill="#94a3b8" fontSize="10" textAnchor="middle">C</text>
             <rect x="555" y="120" width="50" height="80" rx="6" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
             <text x="580" y="152" fill="#e2e8f0" fontSize="11" fontWeight="bold" textAnchor="middle">LOAD</text>
             <text x="580" y="170" fill="#22c55e" fontSize="10" fontWeight="bold" textAnchor="middle">Vo (Buck)</text>
@@ -323,6 +326,9 @@ export function SchematicView({
             <path d="M 460 80 L 580 80 L 580 120" fill="none" style={flowStyle(curPaths.path_diode_on, '#06b6d4')} />
             <path d="M 580 200 L 580 240 L 80 240" fill="none" style={flowStyle(curPaths.path_diode_on, '#06b6d4')} />
 
+<line x1="540" y1="140" x2="540" y2="200" stroke="#38bdf8" strokeWidth="2" />
+            <line x1="545" y1="140" x2="545" y2="200" stroke="#38bdf8" strokeWidth="2" />
+            <text x="542.5" y="135" fill="#94a3b8" fontSize="10" textAnchor="middle">C</text>
             <rect x="555" y="120" width="50" height="80" rx="6" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
             <text x="580" y="152" fill="#e2e8f0" fontSize="11" fontWeight="bold" textAnchor="middle">LOAD</text>
             <text x="580" y="170" fill="#22c55e" fontSize="10" fontWeight="bold" textAnchor="middle">Vo (Boost)</text>
@@ -352,6 +358,9 @@ export function SchematicView({
             <path d="M 470 80 L 580 80 L 580 120" fill="none" style={flowStyle(curPaths.path_diode_on, '#06b6d4')} />
             <path d="M 580 200 L 580 240 L 80 240 L 80 186" fill="none" stroke="#334155" strokeWidth="2" />
 
+            <line x1="540" y1="140" x2="540" y2="200" stroke="#38bdf8" strokeWidth="2" />
+            <line x1="545" y1="140" x2="545" y2="200" stroke="#38bdf8" strokeWidth="2" />
+            <text x="542.5" y="135" fill="#94a3b8" fontSize="10" textAnchor="middle">C</text>
             <rect x="555" y="120" width="50" height="80" rx="6" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
             <text x="580" y="152" fill="#e2e8f0" fontSize="11" fontWeight="bold" textAnchor="middle">LOAD</text>
             <text x="580" y="170" fill="#22c55e" fontSize="10" fontWeight="bold" textAnchor="middle">- Vo +</text>
@@ -390,6 +399,9 @@ export function SchematicView({
             <text x="465" y="60" fill="#94a3b8" fontSize="10" textAnchor="middle">L2</text>
             <path d="M 580 200 L 580 240 L 60 240 L 60 184" fill="none" stroke="#334155" strokeWidth="2" />
 
+            <line x1="540" y1="140" x2="540" y2="200" stroke="#38bdf8" strokeWidth="2" />
+            <line x1="545" y1="140" x2="545" y2="200" stroke="#38bdf8" strokeWidth="2" />
+            <text x="542.5" y="135" fill="#94a3b8" fontSize="10" textAnchor="middle">C</text>
             <rect x="555" y="120" width="50" height="80" rx="6" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
             <text x="580" y="152" fill="#e2e8f0" fontSize="10" fontWeight="bold" textAnchor="middle">LOAD</text>
             <text x="580" y="170" fill="#22c55e" fontSize="9" fontWeight="bold" textAnchor="middle">- Vo +</text>
@@ -429,6 +441,9 @@ export function SchematicView({
             <path d="M 540 80 L 590 80 L 590 120" fill="none" stroke="#38bdf8" strokeWidth="2" />
             <path d="M 590 200 L 590 240 L 60 240 L 60 184" fill="none" stroke="#334155" strokeWidth="2" />
 
+            <line x1="540" y1="140" x2="540" y2="200" stroke="#38bdf8" strokeWidth="2" />
+            <line x1="545" y1="140" x2="545" y2="200" stroke="#38bdf8" strokeWidth="2" />
+            <text x="542.5" y="135" fill="#94a3b8" fontSize="10" textAnchor="middle">C</text>
             <rect x="565" y="120" width="50" height="80" rx="6" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
             <text x="590" y="152" fill="#e2e8f0" fontSize="11" fontWeight="bold" textAnchor="middle">LOAD</text>
             <text x="590" y="170" fill="#22c55e" fontSize="9" fontWeight="bold" textAnchor="middle">+ Vo -</text>
@@ -466,6 +481,9 @@ export function SchematicView({
             <path d="M 470 70 L 600 70 L 600 110" fill="none" style={flowStyle(curPaths.path_diode_on, '#eab308')} />
             <path d="M 600 190 L 600 230 L 305 230 L 305 150" fill="none" style={flowStyle(curPaths.path_diode_on, '#eab308')} />
 
+            <line x1="540" y1="140" x2="540" y2="200" stroke="#38bdf8" strokeWidth="2" />
+            <line x1="545" y1="140" x2="545" y2="200" stroke="#38bdf8" strokeWidth="2" />
+            <text x="542.5" y="135" fill="#94a3b8" fontSize="10" textAnchor="middle">C</text>
             <rect x="575" y="110" width="50" height="80" rx="6" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
             <text x="600" y="142" fill="#e2e8f0" fontSize="11" fontWeight="bold" textAnchor="middle">LOAD</text>
             <text x="600" y="160" fill="#22c55e" fontSize="10" fontWeight="bold" textAnchor="middle">+ Vo -</text>
