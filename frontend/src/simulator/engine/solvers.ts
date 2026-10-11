@@ -88,9 +88,25 @@ export function runSimulation(
   devKeys.forEach((k) => (deviceStates[k] = new Array(stepsCount).fill('OFF')));
   const activePaths: Record<string, boolean>[] = new Array(stepsCount);
 
-  // Initial state variables
-  let iL = 0;
-  let vC = topologyId === 'dcdc_buck' ? vin * duty : topologyId === 'dcdc_boost' ? vin / (1 - duty) : 0;
+  // Initial state variables (nominal steady-state initialization for immediate steady-state visualization)
+  let vC = 0;
+  if (topologyId === 'dcdc_buck') vC = vin * duty;
+  else if (topologyId === 'dcdc_boost') vC = vin / Math.max(0.05, 1 - duty);
+  else if (topologyId === 'dcdc_buck_boost') vC = (duty / Math.max(0.05, 1 - duty)) * vin;
+  else if (topologyId === 'dcdc_cuk') vC = (duty / Math.max(0.05, 1 - duty)) * vin;
+  else if (topologyId === 'dcdc_sepic') vC = (duty / Math.max(0.05, 1 - duty)) * vin;
+  else if (topologyId === 'dcdc_flyback') vC = (control.turnsRatio || 1.0) * (duty / Math.max(0.05, 1 - duty)) * vin;
+  else if (topologyId === 'dcdc_forward') vC = (control.turnsRatio || 0.5) * duty * vin;
+  else if (topologyId === 'dcdc_push_pull_iso') vC = 2 * (control.turnsRatio || 2.0) * (duty * 0.5) * vin;
+  else if (topologyId === 'dcdc_full_bridge_iso') vC = 2 * (control.turnsRatio || 0.3) * (duty * 0.5) * vin;
+
+  let iL = vC / R;
+  if (topologyId === 'dcdc_boost') iL = (vC / R) / Math.max(0.05, 1 - duty);
+  if (topologyId === 'dcdc_buck_boost') iL = (vC / R) / Math.max(0.05, 1 - duty);
+  if (topologyId === 'dcdc_cuk') iL = (vC / R) / Math.max(0.05, 1 - duty);
+  if (topologyId === 'dcdc_sepic') iL = (vC / R) / Math.max(0.05, 1 - duty);
+  if (topologyId === 'dcdc_flyback') iL = (vC / R) / ((control.turnsRatio || 1.0) * Math.max(0.05, 1 - duty));
+
   let scrOn1 = false;
   let scrOn2 = false;
 
@@ -446,6 +462,242 @@ export function runSimulation(
       iLList[step] = iL;
       vCList[step] = vC;
       isList[step] = isSwitchOn ? iL : 0;
+    } else if (topologyId === 'dcdc_flyback') {
+      // Flyback Converter (Isolated Buck-Boost)
+      vinList[step] = vin;
+      const n = control.turnsRatio || 1.0; // Ns / Np
+      const tInPeriod = t % (1 / fsw);
+      const isSwitchOn = tInPeriod < duty / fsw;
+      gate1List[step] = isSwitchOn ? 1 : 0;
+
+      const Lm = L || 200e-6; // Magnetizing inductance
+      let diL = 0;
+      let dvC = 0;
+
+      if (isSwitchOn) {
+        // Switch S1 ON: Primary charges, secondary diode blocks
+        diL = (vin - 0.2) / Lm;
+        dvC = -vC / (R * C);
+        paths.path_switch_on = true;
+        if (devices['S1']) deviceStates['S1'][step] = 'ON';
+        if (devices['D1']) deviceStates['D1'][step] = 'OFF';
+      } else {
+        // Switch S1 OFF: Magnetizing energy transfers to secondary
+        const iSec = (iL / n);
+        diL = (- (vC / n) - 0.7) / Lm;
+        dvC = (iSec - vC / R) / C;
+        paths.path_diode_on = true;
+        if (devices['S1']) deviceStates['S1'][step] = 'OFF';
+        if (devices['D1']) deviceStates['D1'][step] = 'ON';
+      }
+
+      iL += diL * dt;
+      if (iL < 0) iL = 0;
+      vC += dvC * dt;
+      if (vC < 0) vC = 0;
+
+      voList[step] = vC;
+      ioList[step] = vC / R;
+      iLList[step] = isSwitchOn ? iL : (iL / n);
+      vCList[step] = vC;
+      isList[step] = isSwitchOn ? iL : 0;
+      vswList[step] = isSwitchOn ? 0.2 : vin + (vC / n);
+    } else if (topologyId === 'dcdc_forward') {
+      // Forward Converter (Isolated Buck with Demag Winding)
+      vinList[step] = vin;
+      const n = control.turnsRatio || 0.5; // Ns / Np
+      const tInPeriod = t % (1 / fsw);
+      const isSwitchOn = tInPeriod < duty / fsw;
+      gate1List[step] = isSwitchOn ? 1 : 0;
+
+      const Lfilt = L || 500e-6;
+      let diL = 0;
+      let dvC = 0;
+
+      if (isSwitchOn) {
+        // Switch S1 ON: Energy transfers through transformer to output filter
+        diL = (n * vin - vC - 0.8) / Lfilt;
+        paths.path_switch_on = true;
+        if (devices['S1']) deviceStates['S1'][step] = 'ON';
+        if (devices['D1']) deviceStates['D1'][step] = 'ON';
+        if (devices['D2']) deviceStates['D2'][step] = 'OFF';
+        if (devices['D_reset']) deviceStates['D_reset'][step] = 'OFF';
+      } else {
+        // Switch S1 OFF: Core resets through tertiary diode, output freewheels
+        diL = (-vC - 0.7) / Lfilt;
+        paths.path_diode_on = true;
+        if (devices['S1']) deviceStates['S1'][step] = 'OFF';
+        if (devices['D1']) deviceStates['D1'][step] = 'OFF';
+        if (devices['D2']) deviceStates['D2'][step] = 'FREEWHEELING';
+        if (devices['D_reset']) deviceStates['D_reset'][step] = 'ON';
+      }
+
+      dvC = (iL - vC / R) / C;
+      iL += diL * dt;
+      if (iL < 0) iL = 0;
+      vC += dvC * dt;
+      if (vC < 0) vC = 0;
+
+      voList[step] = vC;
+      ioList[step] = vC / R;
+      iLList[step] = iL;
+      vCList[step] = vC;
+      isList[step] = isSwitchOn ? (n * iL) : 0;
+      vswList[step] = isSwitchOn ? 0.2 : 2 * vin;
+    } else if (topologyId === 'dcdc_push_pull_iso') {
+      // Push-Pull Isolated Converter
+      vinList[step] = vin;
+      const n = control.turnsRatio || 2.0; // Ns / Np
+      const T = 1 / fsw;
+      const tInPeriod = t % T;
+      const s1On = tInPeriod < (duty * 0.5 * T);
+      const s2On = tInPeriod >= (0.5 * T) && tInPeriod < (0.5 + duty * 0.5) * T;
+
+      gate1List[step] = s1On ? 1 : 0;
+      gate2List[step] = s2On ? 1 : 0;
+
+      const Lfilt = L || 400e-6;
+      let diL = 0;
+
+      if (s1On || s2On) {
+        diL = (n * vin - vC - 0.8) / Lfilt;
+        paths.path_switch_on = true;
+        if (devices['S1']) deviceStates['S1'][step] = s1On ? 'ON' : 'OFF';
+        if (devices['S2']) deviceStates['S2'][step] = s2On ? 'ON' : 'OFF';
+        if (devices['D1']) deviceStates['D1'][step] = s1On ? 'ON' : 'OFF';
+        if (devices['D2']) deviceStates['D2'][step] = s2On ? 'ON' : 'OFF';
+      } else {
+        // Freewheeling interval
+        diL = (-vC - 0.7) / Lfilt;
+        paths.path_diode_on = true;
+        if (devices['S1']) deviceStates['S1'][step] = 'OFF';
+        if (devices['S2']) deviceStates['S2'][step] = 'OFF';
+        if (devices['D1']) deviceStates['D1'][step] = 'FREEWHEELING';
+        if (devices['D2']) deviceStates['D2'][step] = 'FREEWHEELING';
+      }
+
+      const dvC = (iL - vC / R) / C;
+      iL += diL * dt;
+      if (iL < 0) iL = 0;
+      vC += dvC * dt;
+      if (vC < 0) vC = 0;
+
+      voList[step] = vC;
+      ioList[step] = vC / R;
+      iLList[step] = iL;
+      vCList[step] = vC;
+      isList[step] = (s1On || s2On) ? (n * iL) : 0;
+    } else if (topologyId === 'dcdc_full_bridge_iso') {
+      // Full-Bridge Isolated Converter
+      vinList[step] = vin;
+      const n = control.turnsRatio || 0.3; // Ns / Np
+      const T = 1 / fsw;
+      const tInPeriod = t % T;
+      const pair1On = tInPeriod < (duty * 0.5 * T);
+      const pair2On = tInPeriod >= (0.5 * T) && tInPeriod < (0.5 + duty * 0.5) * T;
+
+      gate1List[step] = pair1On ? 1 : 0;
+      gate2List[step] = pair2On ? 1 : 0;
+
+      const Lfilt = L || 600e-6;
+      let diL = 0;
+
+      if (pair1On || pair2On) {
+        diL = (n * vin - vC - 1.2) / Lfilt;
+        paths.path_switch_on = true;
+        if (devices['S1']) deviceStates['S1'][step] = pair1On ? 'ON' : 'OFF';
+        if (devices['S2']) deviceStates['S2'][step] = pair1On ? 'ON' : 'OFF';
+        if (devices['S3']) deviceStates['S3'][step] = pair2On ? 'ON' : 'OFF';
+        if (devices['S4']) deviceStates['S4'][step] = pair2On ? 'ON' : 'OFF';
+        if (devices['D1']) deviceStates['D1'][step] = pair1On ? 'ON' : 'OFF';
+        if (devices['D2']) deviceStates['D2'][step] = pair2On ? 'ON' : 'OFF';
+      } else {
+        diL = (-vC - 0.7) / Lfilt;
+        paths.path_diode_on = true;
+        if (devices['S1']) deviceStates['S1'][step] = 'OFF';
+        if (devices['S2']) deviceStates['S2'][step] = 'OFF';
+        if (devices['S3']) deviceStates['S3'][step] = 'OFF';
+        if (devices['S4']) deviceStates['S4'][step] = 'OFF';
+        if (devices['D1']) deviceStates['D1'][step] = 'FREEWHEELING';
+        if (devices['D2']) deviceStates['D2'][step] = 'FREEWHEELING';
+      }
+
+      const dvC = (iL - vC / R) / C;
+      iL += diL * dt;
+      if (iL < 0) iL = 0;
+      vC += dvC * dt;
+      if (vC < 0) vC = 0;
+
+      voList[step] = vC;
+      ioList[step] = vC / R;
+      iLList[step] = iL;
+      vCList[step] = vC;
+      isList[step] = (pair1On || pair2On) ? (n * iL) : 0;
+    } else if (topologyId === 'dcdc_cuk') {
+      // Ćuk Converter: inverting, continuous input and output currents
+      vinList[step] = vin;
+      const tInPeriod = t % period;
+      const switchOn = tInPeriod < duty * period;
+      gate1List[step] = switchOn ? 1 : 0;
+
+      const L2 = L > 0 ? L : 1e-3;
+      let diL2 = 0;
+
+      if (switchOn) {
+        diL2 = vC / L2;
+        paths.path_switch_on = true;
+        if (devices['S1']) deviceStates['S1'][step] = 'ON';
+        if (devices['D1']) deviceStates['D1'][step] = 'OFF';
+      } else {
+        diL2 = -vC / L2;
+        paths.path_diode_on = true;
+        if (devices['S1']) deviceStates['S1'][step] = 'OFF';
+        if (devices['D1']) deviceStates['D1'][step] = 'ON';
+      }
+
+      const dvC = (iL - vC / R) / C;
+      iL += diL2 * dt;
+      if (iL < 0) iL = 0;
+      vC += dvC * dt;
+      if (vC < 0) vC = 0;
+
+      voList[step] = vC;
+      ioList[step] = vC / R;
+      iLList[step] = iL;
+      vCList[step] = vC;
+      isList[step] = switchOn ? iL : 0;
+    } else if (topologyId === 'dcdc_sepic') {
+      // SEPIC Converter: non-inverting step-up/down
+      vinList[step] = vin;
+      const tInPeriod = t % period;
+      const switchOn = tInPeriod < duty * period;
+      gate1List[step] = switchOn ? 1 : 0;
+
+      const L1 = 1e-3;
+      let diL = 0;
+      if (switchOn) {
+        diL = vin / L1;
+        paths.path_switch_on = true;
+        if (devices['S1']) deviceStates['S1'][step] = 'ON';
+        if (devices['D1']) deviceStates['D1'][step] = 'OFF';
+      } else {
+        diL = -vC / L1;
+        paths.path_diode_on = true;
+        if (devices['S1']) deviceStates['S1'][step] = 'OFF';
+        if (devices['D1']) deviceStates['D1'][step] = 'ON';
+      }
+
+      const dvC = (iL - vC / R) / C;
+      iL += diL * dt;
+      if (iL < 0) iL = 0;
+      vC += dvC * dt;
+      if (vC < 0) vC = 0;
+
+      voList[step] = vC;
+      ioList[step] = vC / R;
+      iLList[step] = iL;
+      vCList[step] = vC;
+      isList[step] = switchOn ? iL : 0;
     } else if (topologyId === 'dcac_full_bridge') {
       // Full-Bridge Inverter
       vinList[step] = vin;
@@ -500,6 +752,67 @@ export function runSimulation(
       if (devices['S2']) deviceStates['S2'][step] = s2 ? 'ON' : 'OFF';
       if (devices['S3']) deviceStates['S3'][step] = !s1 ? 'ON' : 'OFF';
       if (devices['S4']) deviceStates['S4'][step] = !s2 ? 'ON' : 'OFF';
+    } else if (topologyId === 'dcac_3ph_vsi') {
+      // Three-Phase Voltage Source Inverter (3-Phase VSI)
+      vinList[step] = vin;
+      const fOut = 50;
+      const omega = 2 * Math.PI * fOut;
+      const refA = ma * Math.sin(omega * t);
+      const refB = ma * Math.sin(omega * t - (2 * Math.PI) / 3);
+      const refC = ma * Math.sin(omega * t + (2 * Math.PI) / 3);
+
+      const carrierPhase = (t * fsw) % 1;
+      const triCarrier = carrierPhase < 0.5 ? 4 * carrierPhase - 1 : 3 - 4 * carrierPhase;
+
+      carrierList[step] = triCarrier;
+      referenceList[step] = refA;
+
+      const sa = refA > triCarrier;
+      const sb = refB > triCarrier;
+      const sc = refC > triCarrier;
+
+      gate1List[step] = sa ? 1 : 0;
+      gate2List[step] = sb ? 1 : 0;
+
+      // Pole voltages relative to negative DC bus
+      const vaN = sa ? vin : 0;
+      const vbN = sb ? vin : 0;
+      const vcN = sc ? vin : 0;
+      // Neutral voltage vnN
+      const vnN = (vaN + vbN + vcN) / 3;
+
+      // Phase voltages to star point
+      const van = vaN - vnN;
+      const vbn = vbN - vnN;
+      const vcn = vcN - vnN;
+
+      // Line-to-line voltage Vab
+      const vab = vaN - vbN;
+
+      vsList[step] = van;
+      vsBList[step] = vbn;
+      vsCList[step] = vcn;
+
+      voList[step] = vab; // Output voltage is line-to-line Vab
+
+      if (L > 0) {
+        iL += ((van - iL * R) / L) * dt;
+      } else {
+        iL = van / R;
+      }
+
+      ioList[step] = iL;
+      isList[step] = Math.abs(iL);
+
+      if (devices['S1']) deviceStates['S1'][step] = sa ? 'ON' : 'OFF';
+      if (devices['S4']) deviceStates['S4'][step] = !sa ? 'ON' : 'OFF';
+      if (devices['S3']) deviceStates['S3'][step] = sb ? 'ON' : 'OFF';
+      if (devices['S6']) deviceStates['S6'][step] = !sb ? 'ON' : 'OFF';
+      if (devices['S5']) deviceStates['S5'][step] = sc ? 'ON' : 'OFF';
+      if (devices['S2']) deviceStates['S2'][step] = !sc ? 'ON' : 'OFF';
+
+      if (vab > 0) paths.path_pos = true;
+      if (vab < 0) paths.path_neg = true;
     } else if (topologyId === 'acac_1ph_controller') {
       // Single-phase AC Voltage Controller
       const omega = 2 * Math.PI * fAc;

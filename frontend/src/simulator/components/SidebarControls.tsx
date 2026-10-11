@@ -253,6 +253,25 @@ export function SidebarControls({
           </div>
         )}
 
+        {/* Transformer Turns Ratio for Isolated Converters */}
+        {control.turnsRatio !== undefined && (
+          <div>
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-slate-400">Turns Ratio (Ns / Np)</span>
+              <span className="font-mono font-bold text-sky-400">{control.turnsRatio.toFixed(2)}</span>
+            </div>
+            <input
+              type="range"
+              min="10"
+              max="500"
+              step="5"
+              value={Math.round(control.turnsRatio * 100)}
+              onChange={(e) => onUpdateControl({ ...control, turnsRatio: Number(e.target.value) / 100 })}
+              className="w-full accent-sky-500 h-1.5 bg-slate-800 rounded cursor-pointer"
+            />
+          </div>
+        )}
+
         {/* Switching Frequency */}
         {control.fsw !== undefined && (
           <div className="flex justify-between items-center">

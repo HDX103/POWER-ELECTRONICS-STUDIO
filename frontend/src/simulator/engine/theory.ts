@@ -342,6 +342,131 @@ export function getTheoryModel(
       break;
     }
 
+    case 'dcdc_flyback': {
+      // Flyback Converter (Isolated)
+      const n = control.turnsRatio || 1.0; // Ns / Np
+      const safeD = Math.min(0.85, duty);
+      formulaVdc = 'V_o = \\frac{N_s}{N_p} \\frac{D}{1 - D} V_{in}';
+      formulaVrms = 'V_{o,rms} \\approx V_o';
+      formulaIdc = 'I_o = \\frac{V_o}{R}';
+      theoryVdc = n * (safeD / (1 - safeD)) * vin;
+      theoryVrms = theoryVdc;
+      theoryIdc = theoryVdc / R;
+      const vswPeak = vin + theoryVdc / n;
+
+      steps.push(
+        {
+          title: '1. Isolated Flyback Conversion Ratio',
+          latex: 'V_o = \\left(\\frac{N_s}{N_p}\\right) \\frac{D}{1 - D} V_{in}',
+          substituted: `V_o = ${n} \\times \\frac{${safeD}}{1 - ${safeD}} \\times ${vin} = ${theoryVdc.toFixed(2)}\\text{ V}`,
+          result: `${theoryVdc.toFixed(2)} V`,
+        },
+        {
+          title: '2. Primary Switch Peak Voltage Stress',
+          latex: 'V_{sw,peak} = V_{in} + \\frac{V_o}{n}',
+          substituted: `V_{sw,peak} = ${vin} + \\frac{${theoryVdc.toFixed(2)}}{${n}} = ${vswPeak.toFixed(2)}\\text{ V}`,
+          result: `${vswPeak.toFixed(2)} V`,
+        },
+        {
+          title: '3. Transformer Energy Storage Phase',
+          latex: 'E_{stored} = \\frac{1}{2} L_m I_{peak}^2 \\quad \\text{(Stored during } D \\cdot T, \\text{ delivered during } (1-D) \\cdot T\\text{)}',
+          substituted: `Turns ratio n = ${n}, Duty = ${safeD}`,
+          result: 'Coupled Inductor Transfer',
+        }
+      );
+      break;
+    }
+
+    case 'dcdc_forward': {
+      // Forward Converter (Isolated)
+      const n = control.turnsRatio || 0.5; // Ns / Np
+      const safeD = Math.min(0.48, duty); // Limited by 1:1 tertiary demagnetization
+      formulaVdc = 'V_o = \\frac{N_s}{N_p} D V_{in}';
+      formulaVrms = 'V_{o,rms} \\approx V_o';
+      formulaIdc = 'I_o = \\frac{V_o}{R}';
+      theoryVdc = n * safeD * vin;
+      theoryVrms = theoryVdc;
+      theoryIdc = theoryVdc / R;
+
+      steps.push(
+        {
+          title: '1. Isolated Forward Conversion Ratio',
+          latex: 'V_o = \\left(\\frac{N_s}{N_p}\\right) D \\times V_{in}',
+          substituted: `V_o = ${n} \\times ${safeD} \\times ${vin} = ${theoryVdc.toFixed(2)}\\text{ V}`,
+          result: `${theoryVdc.toFixed(2)} V`,
+        },
+        {
+          title: '2. Demagnetization Reset Condition',
+          latex: 'D_{max} \\le \\frac{1}{1 + N_{reset}/N_p} = 0.50 \\quad \\text{(for equal reset winding)}',
+          substituted: `Active Duty D = ${safeD} < 0.50 \\rightarrow \\text{Core resets fully each cycle}`,
+          result: 'Core Reset Safe',
+        },
+        {
+          title: '3. Primary Switch Off-State Voltage',
+          latex: 'V_{sw,peak} = 2 \\times V_{in}',
+          substituted: `V_{sw,peak} = 2 \\times ${vin} = ${2 * vin}\\text{ V}`,
+          result: `${2 * vin} V`,
+        }
+      );
+      break;
+    }
+
+    case 'dcdc_push_pull_iso': {
+      // Push-Pull Isolated Converter
+      const n = control.turnsRatio || 2.0; // Ns / Np
+      const safeD = Math.min(0.45, duty * 0.5); // Duty per switch
+      formulaVdc = 'V_o = 2 \\frac{N_s}{N_p} D_{sw} V_{in}';
+      formulaVrms = 'V_{o,rms} \\approx V_o';
+      formulaIdc = 'I_o = \\frac{V_o}{R}';
+      theoryVdc = 2 * n * safeD * vin;
+      theoryVrms = theoryVdc;
+      theoryIdc = theoryVdc / R;
+
+      steps.push(
+        {
+          title: '1. Push-Pull Conversion Ratio',
+          latex: 'V_o = 2 \\left(\\frac{N_s}{N_p}\\right) D_{sw} \\times V_{in}',
+          substituted: `V_o = 2 \\times ${n} \\times ${safeD.toFixed(3)} \\times ${vin} = ${theoryVdc.toFixed(2)}\\text{ V}`,
+          result: `${theoryVdc.toFixed(2)} V`,
+        },
+        {
+          title: '2. Switch Voltage Stress (Autotransformer Effect)',
+          latex: 'V_{sw,peak} = 2 \\times V_{in}',
+          substituted: `V_{sw,peak} = 2 \\times ${vin} = ${2 * vin}\\text{ V}`,
+          result: `${2 * vin} V`,
+        }
+      );
+      break;
+    }
+
+    case 'dcdc_full_bridge_iso': {
+      // Full-Bridge Isolated Converter
+      const n = control.turnsRatio || 0.3; // Ns / Np
+      const safeD = Math.min(0.45, duty * 0.5);
+      formulaVdc = 'V_o = 2 \\frac{N_s}{N_p} D_{sw} V_{in}';
+      formulaVrms = 'V_{o,rms} \\approx V_o';
+      formulaIdc = 'I_o = \\frac{V_o}{R}';
+      theoryVdc = 2 * n * safeD * vin;
+      theoryVrms = theoryVdc;
+      theoryIdc = theoryVdc / R;
+
+      steps.push(
+        {
+          title: '1. Full-Bridge Isolated Conversion Ratio',
+          latex: 'V_o = 2 \\left(\\frac{N_s}{N_p}\\right) D_{sw} \\times V_{in}',
+          substituted: `V_o = 2 \\times ${n} \\times ${safeD.toFixed(3)} \\times ${vin} = ${theoryVdc.toFixed(2)}\\text{ V}`,
+          result: `${theoryVdc.toFixed(2)} V`,
+        },
+        {
+          title: '2. Switch Voltage Stress (Clamped to DC Rail)',
+          latex: 'V_{sw,peak} = V_{in}',
+          substituted: `V_{sw,peak} = ${vin}\\text{ V} \\quad \\text{(No 2x overshoot like Push-Pull)}`,
+          result: `${vin} V`,
+        }
+      );
+      break;
+    }
+
     case 'dcac_full_bridge': {
       // Single-phase full-bridge inverter
       formulaVdc = 'V_{o1,rms} = \\frac{4 V_{in}}{\\pi \\sqrt{2}} \\approx 0.90 V_{in} \\text{ (Square)}';
@@ -385,6 +510,103 @@ export function getTheoryModel(
           }
         );
       }
+      break;
+    }
+
+    case 'dcdc_cuk': {
+      formulaVdc = 'V_o = -\\frac{D}{1 - D} V_{in}';
+      formulaVrms = 'V_o = \\frac{D}{1 - D} V_{in}';
+      formulaIdc = 'I_{dc} = \\frac{V_{dc}}{R}';
+      theoryVdc = (duty / Math.max(0.02, 1 - duty)) * vin;
+      theoryVrms = theoryVdc;
+      theoryIdc = theoryVdc / R;
+
+      steps.push(
+        {
+          title: '1. Ćuk Voltage Conversion Ratio',
+          latex: 'M(D) = \\frac{V_o}{V_{in}} = -\\frac{D}{1 - D}',
+          substituted: `M(${duty}) = \\frac{${duty}}{${(1 - duty).toFixed(2)}} = ${(duty / (1 - duty)).toFixed(3)}`,
+          result: `${(duty / (1 - duty)).toFixed(3)} (inverting)`,
+        },
+        {
+          title: '2. Average Output Voltage',
+          latex: 'V_{dc} = \\frac{D}{1 - D} \\times V_{in}',
+          substituted: `V_{dc} = \\frac{${duty}}{${(1 - duty).toFixed(2)}} \\times ${vin} = ${theoryVdc.toFixed(2)}\\text{ V}`,
+          result: `${theoryVdc.toFixed(2)} V`,
+        },
+        {
+          title: '3. Intermediate Coupling Capacitor Voltage',
+          latex: 'V_{C1} = V_{in} + V_o = \\frac{V_{in}}{1 - D}',
+          substituted: `V_{C1} = \\frac{${vin}}{${(1 - duty).toFixed(2)}} = ${(vin / (1 - duty)).toFixed(2)}\\text{ V}`,
+          result: `${(vin / (1 - duty)).toFixed(2)} V`,
+        }
+      );
+      notes.push('Ćuk converter offers continuous current at both input and output terminals, reducing conducted EMI.');
+      break;
+    }
+
+    case 'dcdc_sepic': {
+      formulaVdc = 'V_o = \\frac{D}{1 - D} V_{in}';
+      formulaVrms = 'V_o = \\frac{D}{1 - D} V_{in}';
+      formulaIdc = 'I_{dc} = \\frac{V_{dc}}{R}';
+      theoryVdc = (duty / Math.max(0.02, 1 - duty)) * vin;
+      theoryVrms = theoryVdc;
+      theoryIdc = theoryVdc / R;
+
+      steps.push(
+        {
+          title: '1. SEPIC Voltage Conversion Ratio',
+          latex: 'M(D) = \\frac{V_o}{V_{in}} = \\frac{D}{1 - D}',
+          substituted: `M(${duty}) = \\frac{${duty}}{${(1 - duty).toFixed(2)}} = ${(duty / (1 - duty)).toFixed(3)}`,
+          result: `${(duty / (1 - duty)).toFixed(3)}`,
+        },
+        {
+          title: '2. Average Output Voltage (Non-Inverting)',
+          latex: 'V_{dc} = \\frac{D}{1 - D} \\times V_{in}',
+          substituted: `V_{dc} = \\frac{${duty}}{${(1 - duty).toFixed(2)}} \\times ${vin} = ${theoryVdc.toFixed(2)}\\text{ V}`,
+          result: `${theoryVdc.toFixed(2)} V`,
+        },
+        {
+          title: '3. Coupling Capacitor Voltage',
+          latex: 'V_{C1} = V_{in}',
+          substituted: `V_{C1} = ${vin}\\text{ V}`,
+          result: `${vin} V`,
+        }
+      );
+      notes.push('SEPIC converter provides non-inverting buck-boost operation with true shutdown isolation.');
+      break;
+    }
+
+    case 'dcac_3ph_vsi': {
+      formulaVdc = 'V_{dc} = 0 \\text{ (Balanced 3-Phase AC)}';
+      formulaVrms = 'V_{LL1,rms} = \\frac{\\sqrt{3}}{2\\sqrt{2}} m_a V_{in} \\approx 0.612 m_a V_{in}';
+      formulaIdc = 'I_{ph,rms} = \\frac{V_{LN1,rms}}{|Z|}';
+      theoryVdc = 0;
+      theoryVrms = (Math.sqrt(3) / (2 * Math.SQRT2)) * ma * vin;
+      const vLN1_rms = (ma * vin) / (2 * Math.SQRT2);
+      theoryIdc = vLN1_rms / R;
+
+      steps.push(
+        {
+          title: '1. Phase-to-Neutral Fundamental RMS Voltage',
+          latex: 'V_{LN1,rms} = \\frac{m_a V_{in}}{2\\sqrt{2}}',
+          substituted: `V_{LN1,rms} = \\frac{${ma} \\times ${vin}}{2\\sqrt{2}} = ${vLN1_rms.toFixed(2)}\\text{ V}`,
+          result: `${vLN1_rms.toFixed(2)} V`,
+        },
+        {
+          title: '2. Line-to-Line Fundamental RMS Voltage',
+          latex: 'V_{LL1,rms} = \\sqrt{3} \\times V_{LN1,rms} = \\frac{\\sqrt{3}}{2\\sqrt{2}} m_a V_{in}',
+          substituted: `V_{LL1,rms} = \\sqrt{3} \\times ${vLN1_rms.toFixed(2)} = ${theoryVrms.toFixed(2)}\\text{ V}`,
+          result: `${theoryVrms.toFixed(2)} V`,
+        },
+        {
+          title: '3. Six-Step (180° Conduction) Fundamental Voltage (Max)',
+          latex: 'V_{LL1,rms(max)} = \\frac{\\sqrt{6}}{\\pi} V_{in} \\approx 0.78 V_{in}',
+          substituted: `V_{LL1,rms(max)} = \\frac{\\sqrt{6}}{\\pi} \\times ${vin} = ${((Math.sqrt(6) / Math.PI) * vin).toFixed(2)}\\text{ V}`,
+          result: `${((Math.sqrt(6) / Math.PI) * vin).toFixed(2)} V`,
+        }
+      );
+      notes.push('Triplen harmonics (3rd, 9th, 15th) are completely canceled in balanced three-phase line-to-line voltages.');
       break;
     }
 

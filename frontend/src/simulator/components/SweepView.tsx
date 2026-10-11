@@ -27,6 +27,9 @@ export function SweepView({ topology, source, load, control, devices }: Props) {
     if (sweepKey === 'duty' || sweepKey === 'ma') {
       start = 0.1;
       end = 0.9;
+    } else if (sweepKey === 'turnsRatio') {
+      start = 0.1;
+      end = 4.0;
     } else if (sweepKey === 'R') {
       start = 2;
       end = 50;
@@ -39,6 +42,7 @@ export function SweepView({ topology, source, load, control, devices }: Props) {
 
       if (sweepKey === 'alpha') modControl.alpha = val;
       else if (sweepKey === 'duty') modControl.duty = val;
+      else if (sweepKey === 'turnsRatio') modControl.turnsRatio = val;
       else if (sweepKey === 'ma') modControl.ma = val;
       else if (sweepKey === 'R') modLoad.R = val;
 
@@ -87,6 +91,9 @@ export function SweepView({ topology, source, load, control, devices }: Props) {
           >
             {isAcDc && <option value="alpha">Firing Angle α (0° - 180°)</option>}
             {isDcDc && <option value="duty">Duty Cycle D (0.1 - 0.9)</option>}
+            {isDcDc && topology.subCategory === 'Isolated' && (
+              <option value="turnsRatio">Turns Ratio Ns/Np (0.1 - 4.0)</option>
+            )}
             {isDcAc && <option value="ma">Modulation Index ma (0.1 - 0.9)</option>}
             <option value="R">Load Resistance R (2Ω - 50Ω)</option>
           </select>

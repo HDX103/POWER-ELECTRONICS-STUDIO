@@ -128,6 +128,45 @@ describe('Power Electronics Studio Simulation Engine', () => {
       expect(res.metrics.vdc).toBeGreaterThan(24);
       expect(res.theory.theoryVdc).toBeCloseTo(48, 0);
     });
+
+    it('simulates Isolated Flyback Converter with turns ratio transfer', () => {
+      const top = TOPOLOGY_DEFINITIONS.find((t) => t.id === 'dcdc_flyback')!;
+      const devs = {
+        S1: { ...DEFAULT_DEVICE_MODELS.MOSFET },
+        D1: { ...DEFAULT_DEVICE_MODELS.Diode },
+      };
+      const res = runSimulation(
+        top.id,
+        { type: 'DC', vdc: 24 },
+        top.defaultLoad,
+        { duty: 0.5, fsw: 50000, turnsRatio: 1.5 },
+        devs
+      );
+
+      expect(res.metrics.vdc).toBeGreaterThan(15);
+      expect(res.theory.theoryVdc).toBeCloseTo(36, 0); // 1.5 * (0.5/0.5) * 24 = 36V
+      expect(res.signals.vo.length).toBe(res.time.length);
+    });
+
+    it('simulates Isolated Forward Converter with demag winding and LC filter', () => {
+      const top = TOPOLOGY_DEFINITIONS.find((t) => t.id === 'dcdc_forward')!;
+      const devs = {
+        S1: { ...DEFAULT_DEVICE_MODELS.MOSFET },
+        D_reset: { ...DEFAULT_DEVICE_MODELS.Diode },
+        D1: { ...DEFAULT_DEVICE_MODELS.Diode },
+        D2: { ...DEFAULT_DEVICE_MODELS.Diode },
+      };
+      const res = runSimulation(
+        top.id,
+        { type: 'DC', vdc: 48 },
+        top.defaultLoad,
+        { duty: 0.4, fsw: 50000, turnsRatio: 0.5 },
+        devs
+      );
+
+      expect(res.metrics.vdc).toBeGreaterThan(5);
+      expect(res.theory.theoryVdc).toBeCloseTo(9.6, 0); // 0.5 * 0.4 * 48 = 9.6V
+    });
   });
 
   describe('DC-AC Inverter Simulations', () => {
@@ -151,6 +190,58 @@ describe('Power Electronics Studio Simulation Engine', () => {
       expect(Math.abs(res.metrics.vdc)).toBeLessThan(50);
       expect(res.metrics.vrms).toBeGreaterThan(100);
       expect(res.signals.carrier).toBeDefined();
+    });
+
+    it('simulates Three-Phase VSI with 3-phase line and phase voltages', () => {
+      const top = TOPOLOGY_DEFINITIONS.find((t) => t.id === 'dcac_3ph_vsi')!;
+      const devs = {
+        S1: { ...DEFAULT_DEVICE_MODELS.IGBT },
+        S2: { ...DEFAULT_DEVICE_MODELS.IGBT },
+        S3: { ...DEFAULT_DEVICE_MODELS.IGBT },
+        S4: { ...DEFAULT_DEVICE_MODELS.IGBT },
+        S5: { ...DEFAULT_DEVICE_MODELS.IGBT },
+        S6: { ...DEFAULT_DEVICE_MODELS.IGBT },
+      };
+      const res = runSimulation(
+        top.id,
+        { type: 'DC', vdc: 400 },
+        top.defaultLoad,
+        { modulationType: 'spwm_bipolar', ma: 0.85, fsw: 6000 },
+        devs
+      );
+
+      // 3-Phase line-to-line AC has near zero DC average
+      expect(Math.abs(res.metrics.vdc)).toBeLessThan(50);
+      expect(res.metrics.vrms).toBeGreaterThan(100);
+      expect(res.signals.vs_b).toBeDefined();
+      expect(res.signals.vs_c).toBeDefined();
+      expect(res.theory.theoryVrms).toBeGreaterThan(150);
+    });
+  });
+
+  describe('Additional DC-DC Topologies (Ćuk & SEPIC)', () => {
+    it('simulates Ćuk Converter with continuous capacitor voltage transfer', () => {
+      const top = TOPOLOGY_DEFINITIONS.find((t) => t.id === 'dcdc_cuk')!;
+      const devs = {
+        S1: { ...DEFAULT_DEVICE_MODELS.MOSFET },
+        D1: { ...DEFAULT_DEVICE_MODELS.Diode },
+      };
+      const res = runSimulation(top.id, { type: 'DC', vdc: 24 }, top.defaultLoad, { duty: 0.5, fsw: 30000 }, devs);
+
+      expect(res.metrics.vdc).toBeGreaterThan(15);
+      expect(res.theory.theoryVdc).toBeCloseTo(24, 0);
+    });
+
+    it('simulates SEPIC Converter with non-inverting transfer', () => {
+      const top = TOPOLOGY_DEFINITIONS.find((t) => t.id === 'dcdc_sepic')!;
+      const devs = {
+        S1: { ...DEFAULT_DEVICE_MODELS.MOSFET },
+        D1: { ...DEFAULT_DEVICE_MODELS.Diode },
+      };
+      const res = runSimulation(top.id, { type: 'DC', vdc: 24 }, top.defaultLoad, { duty: 0.5, fsw: 30000 }, devs);
+
+      expect(res.metrics.vdc).toBeGreaterThan(15);
+      expect(res.theory.theoryVdc).toBeCloseTo(24, 0);
     });
   });
 

@@ -287,6 +287,143 @@ export function SchematicView({
           </g>
         )}
 
+        {/* ================= DC-DC FLYBACK CONVERTER (ISOLATED) ================= */}
+        {topology.id === 'dcdc_flyback' && (
+          <g transform="translate(40, 20)">
+            {/* Input DC Source */}
+            <circle cx="60" cy="160" r="24" fill="#0f172a" stroke="#38bdf8" strokeWidth="2.5" />
+            <text x="60" y="165" fill="#38bdf8" fontSize="12" fontWeight="bold" textAnchor="middle">
+              DC
+            </text>
+            <text x="60" y="200" fill="#94a3b8" fontSize="11" textAnchor="middle">
+              Vin
+            </text>
+
+            {/* Primary Loop to Transformer */}
+            <path d="M 60 136 L 60 70 L 260 70" fill="none" style={flowStyle(curPaths.path_switch_on, '#22c55e')} />
+            <path d="M 260 150 L 260 170" fill="none" stroke="#38bdf8" strokeWidth="2" />
+            <path d="M 260 210 L 260 250 L 60 250 L 60 184" fill="none" style={flowStyle(curPaths.path_switch_on, '#22c55e')} />
+
+            {/* Primary Inductor Winding */}
+            <path
+              d="M 260 70 Q 240 85 260 95 Q 240 105 260 115 Q 240 125 260 135 L 260 150"
+              fill="none"
+              stroke="#38bdf8"
+              strokeWidth="2.5"
+            />
+            {/* Dot convention on primary */}
+            <circle cx="242" cy="74" r="3.5" fill="#eab308" />
+
+            {/* Ferrite Core Isolation Barrier */}
+            <line x1="280" y1="60" x2="280" y2="160" stroke="#64748b" strokeWidth="2" strokeDasharray="3 3" />
+            <line x1="285" y1="60" x2="285" y2="160" stroke="#64748b" strokeWidth="2" strokeDasharray="3 3" />
+            <text x="282" y="50" fill="#94a3b8" fontSize="10" fontWeight="bold" textAnchor="middle">
+              CORE
+            </text>
+
+            {/* Secondary Inductor Winding (Opposing dot for flyback) */}
+            <path
+              d="M 305 70 Q 325 85 305 95 Q 325 105 305 115 Q 325 125 305 135 L 305 150"
+              fill="none"
+              stroke="#38bdf8"
+              strokeWidth="2.5"
+            />
+            {/* Secondary dot at bottom */}
+            <circle cx="323" cy="145" r="3.5" fill="#eab308" />
+
+            {/* Secondary Circuit */}
+            <path d="M 305 70 L 410 70" fill="none" style={flowStyle(curPaths.path_diode_on, '#eab308')} />
+            <path d="M 480 70 L 600 70 L 600 110" fill="none" style={flowStyle(curPaths.path_diode_on, '#eab308')} />
+            <path d="M 600 190 L 600 230 L 305 230 L 305 150" fill="none" style={flowStyle(curPaths.path_diode_on, '#eab308')} />
+
+            {/* Output Filter Capacitor */}
+            <line x1="530" y1="70" x2="530" y2="135" stroke="#38bdf8" strokeWidth="2" />
+            <line x1="515" y1="135" x2="545" y2="135" stroke="#38bdf8" strokeWidth="2.5" />
+            <line x1="515" y1="145" x2="545" y2="145" stroke="#38bdf8" strokeWidth="2.5" />
+            <line x1="530" y1="145" x2="530" y2="230" stroke="#38bdf8" strokeWidth="2" />
+            <text x="500" y="144" fill="#94a3b8" fontSize="10" textAnchor="end">
+              C_out
+            </text>
+
+            {/* Load */}
+            <rect x="575" y="110" width="50" height="80" rx="6" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
+            <text x="600" y="142" fill="#e2e8f0" fontSize="11" fontWeight="bold" textAnchor="middle">
+              LOAD
+            </text>
+            <text x="600" y="160" fill="#22c55e" fontSize="10" fontWeight="bold" textAnchor="middle">
+              Vo (Flyback)
+            </text>
+
+            {/* Badges */}
+            <foreignObject x="215" y="165" width="90" height="35">
+              {getDeviceBadge('S1', currentStates['S1'], 'S1 (Primary)')}
+            </foreignObject>
+            <foreignObject x="400" y="52" width="90" height="35">
+              {getDeviceBadge('D1', currentStates['D1'], 'D1 (Secondary)')}
+            </foreignObject>
+          </g>
+        )}
+
+        {/* ================= DC-DC FORWARD CONVERTER (ISOLATED) ================= */}
+        {topology.id === 'dcdc_forward' && (
+          <g transform="translate(30, 15)">
+            {/* Input DC Source */}
+            <circle cx="50" cy="150" r="22" fill="#0f172a" stroke="#38bdf8" strokeWidth="2.5" />
+            <text x="50" y="154" fill="#38bdf8" fontSize="11" fontWeight="bold" textAnchor="middle">
+              DC
+            </text>
+            <text x="50" y="185" fill="#94a3b8" fontSize="10" textAnchor="middle">
+              Vin
+            </text>
+
+            {/* Primary Winding */}
+            <path d="M 50 128 L 50 60 L 190 60 L 190 80" fill="none" style={flowStyle(curPaths.path_switch_on, '#22c55e')} />
+            <path d="M 190 140 L 190 160" fill="none" stroke="#38bdf8" strokeWidth="2" />
+            <path d="M 190 200 L 190 240 L 50 240 L 50 172" fill="none" style={flowStyle(curPaths.path_switch_on, '#22c55e')} />
+
+            {/* Transformer Core Barrier */}
+            <line x1="215" y1="50" x2="215" y2="210" stroke="#64748b" strokeWidth="2" strokeDasharray="3 3" />
+            <line x1="220" y1="50" x2="220" y2="210" stroke="#64748b" strokeWidth="2" strokeDasharray="3 3" />
+
+            {/* Secondary Winding */}
+            <path d="M 240 60 L 330 60" fill="none" style={flowStyle(curPaths.path_switch_on, '#22c55e')} />
+            <path d="M 400 60 L 460 60" fill="none" style={flowStyle(curPaths.path_switch_on, '#22c55e')} />
+
+            {/* Secondary Inductor L */}
+            <path
+              d="M 460 60 Q 475 42 490 60 Q 505 42 520 60 Q 535 42 550 60 L 630 60 L 630 100"
+              fill="none"
+              stroke="#38bdf8"
+              strokeWidth="2.5"
+            />
+            <path d="M 630 180 L 630 220 L 240 220 L 240 140" fill="none" style={flowStyle(curPaths.path_switch_on || curPaths.path_diode_on, '#22c55e')} />
+
+            {/* Freewheel Diode Branch D2 */}
+            <line x1="430" y1="60" x2="430" y2="220" stroke="#334155" strokeWidth="2" />
+            <path d="M 430 220 L 430 60 L 550 60 L 630 60 L 630 220 L 430 220" fill="none" style={flowStyle(curPaths.path_diode_on, '#eab308')} />
+
+            {/* Load */}
+            <rect x="605" y="100" width="50" height="80" rx="6" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
+            <text x="630" y="132" fill="#e2e8f0" fontSize="11" fontWeight="bold" textAnchor="middle">
+              LOAD
+            </text>
+            <text x="630" y="150" fill="#22c55e" fontSize="10" fontWeight="bold" textAnchor="middle">
+              Vo (Fwd)
+            </text>
+
+            {/* Badges */}
+            <foreignObject x="145" y="155" width="90" height="35">
+              {getDeviceBadge('S1', currentStates['S1'], 'S1 (Pri)')}
+            </foreignObject>
+            <foreignObject x="325" y="42" width="85" height="35">
+              {getDeviceBadge('D1', currentStates['D1'], 'D1 (Fwd)')}
+            </foreignObject>
+            <foreignObject x="390" y="125" width="85" height="35">
+              {getDeviceBadge('D2', currentStates['D2'], 'D2 (FWD)')}
+            </foreignObject>
+          </g>
+        )}
+
         {/* ================= DC-AC FULL BRIDGE INVERTER ================= */}
         {topology.id === 'dcac_full_bridge' && (
           <g transform="translate(60, 20)">
@@ -381,10 +518,174 @@ export function SchematicView({
           </g>
         )}
 
+        {/* ================= DC-DC PUSH-PULL ISOLATED CONVERTER ================= */}
+        {topology.id === 'dcdc_push_pull_iso' && (
+          <g transform="translate(40, 20)">
+            {/* DC Input Source */}
+            <circle cx="50" cy="150" r="22" fill="#0f172a" stroke="#38bdf8" strokeWidth="2.5" />
+            <text x="50" y="154" fill="#38bdf8" fontSize="11" fontWeight="bold" textAnchor="middle">
+              DC
+            </text>
+            <text x="50" y="185" fill="#94a3b8" fontSize="10" textAnchor="middle">
+              Vin
+            </text>
+
+            {/* Vin feeds center tap of primary */}
+            <path d="M 50 128 L 50 60 L 160 60 L 160 150" fill="none" style={flowStyle(curPaths.path_s1 || curPaths.path_s2, '#22c55e')} />
+            <text x="145" y="153" fill="#eab308" fontSize="9" fontWeight="bold">CT</text>
+
+            {/* Primary Center-Tapped Winding */}
+            <line x1="180" y1="90" x2="180" y2="210" stroke="#38bdf8" strokeWidth="3" />
+            <circle cx="180" cy="150" r="3" fill="#eab308" />
+
+            {/* Switch S1 branch (top) */}
+            <path d="M 180 90 L 220 90 L 220 110" fill="none" style={flowStyle(curPaths.path_s1, '#22c55e')} />
+            <path d="M 220 145 L 220 250 L 50 250 L 50 172" fill="none" style={flowStyle(curPaths.path_s1, '#22c55e')} />
+
+            {/* Switch S2 branch (bottom) */}
+            <path d="M 180 210 L 220 210 L 220 190" fill="none" style={flowStyle(curPaths.path_s2, '#ec4899')} />
+            <path d="M 220 225 L 220 250" fill="none" style={flowStyle(curPaths.path_s2, '#ec4899')} />
+
+            {/* Magnetic Core Barrier */}
+            <line x1="260" y1="60" x2="260" y2="240" stroke="#64748b" strokeWidth="2" strokeDasharray="3 3" />
+            <line x1="265" y1="60" x2="265" y2="240" stroke="#64748b" strokeWidth="2" strokeDasharray="3 3" />
+
+            {/* Secondary Center-Tapped Winding */}
+            <line x1="290" y1="80" x2="290" y2="220" stroke="#38bdf8" strokeWidth="3" />
+            <circle cx="290" cy="150" r="3" fill="#eab308" />
+
+            {/* Secondary Diodes D1 & D2 */}
+            <path d="M 290 80 L 350 80" fill="none" style={flowStyle(curPaths.path_d1, '#22c55e')} />
+            <path d="M 430 80 L 480 80 L 480 120" fill="none" style={flowStyle(curPaths.path_d1, '#22c55e')} />
+
+            <path d="M 290 220 L 350 220" fill="none" style={flowStyle(curPaths.path_d2, '#ec4899')} />
+            <path d="M 430 220 L 480 220 L 480 120" fill="none" style={flowStyle(curPaths.path_d2, '#ec4899')} />
+
+            {/* Secondary Center Tap to Ground/Return */}
+            <path d="M 290 150 L 610 150 L 610 200" fill="none" stroke="#334155" strokeWidth="2" />
+
+            {/* LC Output Filter & Load */}
+            <path
+              d="M 480 80 Q 495 65 510 80 Q 525 65 540 80 Q 555 65 570 80 L 630 80 L 630 110"
+              fill="none"
+              stroke="#38bdf8"
+              strokeWidth="2.5"
+            />
+            <rect x="605" y="110" width="50" height="70" rx="6" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
+            <text x="630" y="140" fill="#e2e8f0" fontSize="10" fontWeight="bold" textAnchor="middle">
+              LOAD
+            </text>
+            <text x="630" y="156" fill="#22c55e" fontSize="9" fontWeight="bold" textAnchor="middle">
+              Vo (Push-Pull)
+            </text>
+
+            {/* Badges */}
+            <foreignObject x="180" y="110" width="80" height="35">
+              {getDeviceBadge('S1', currentStates['S1'], 'S1')}
+            </foreignObject>
+            <foreignObject x="180" y="190" width="80" height="35">
+              {getDeviceBadge('S2', currentStates['S2'], 'S2')}
+            </foreignObject>
+            <foreignObject x="350" y="62" width="80" height="35">
+              {getDeviceBadge('D1', currentStates['D1'], 'D1')}
+            </foreignObject>
+            <foreignObject x="350" y="202" width="80" height="35">
+              {getDeviceBadge('D2', currentStates['D2'], 'D2')}
+            </foreignObject>
+          </g>
+        )}
+
+        {/* ================= DC-DC FULL-BRIDGE ISOLATED CONVERTER ================= */}
+        {topology.id === 'dcdc_full_bridge_iso' && (
+          <g transform="translate(30, 20)">
+            {/* DC Input Source */}
+            <circle cx="50" cy="150" r="22" fill="#0f172a" stroke="#38bdf8" strokeWidth="2.5" />
+            <text x="50" y="154" fill="#38bdf8" fontSize="11" fontWeight="bold" textAnchor="middle">
+              DC
+            </text>
+            <text x="50" y="185" fill="#94a3b8" fontSize="10" textAnchor="middle">
+              Vin
+            </text>
+
+            {/* Primary Rails */}
+            <path d="M 50 128 L 50 60 L 260 60" fill="none" stroke="#334155" strokeWidth="2" />
+            <path d="M 50 172 L 50 240 L 260 240" fill="none" stroke="#334155" strokeWidth="2" />
+
+            {/* Primary Bridge Legs */}
+            <line x1="150" y1="60" x2="150" y2="240" stroke="#334155" strokeWidth="2" />
+            <line x1="250" y1="60" x2="250" y2="240" stroke="#334155" strokeWidth="2" />
+
+            {/* Bridge Midpoints to Primary Transformer Winding */}
+            <path d="M 150 150 L 300 150" fill="none" style={flowStyle(curPaths.path_s1, '#22c55e')} />
+            <path d="M 250 150 L 300 150" fill="none" style={flowStyle(curPaths.path_s2, '#ec4899')} />
+
+            {/* Transformer Primary & Secondary */}
+            <line x1="300" y1="110" x2="300" y2="190" stroke="#38bdf8" strokeWidth="3" />
+            {/* Core Barrier */}
+            <line x1="320" y1="80" x2="320" y2="220" stroke="#64748b" strokeWidth="2" strokeDasharray="3 3" />
+            <line x1="325" y1="80" x2="325" y2="220" stroke="#64748b" strokeWidth="2" strokeDasharray="3 3" />
+            {/* Secondary Winding */}
+            <line x1="345" y1="100" x2="345" y2="200" stroke="#38bdf8" strokeWidth="3" />
+
+            {/* Secondary Full-Wave Rectification with Center-Tap */}
+            <path d="M 345 100 L 410 100" fill="none" style={flowStyle(curPaths.path_d1, '#22c55e')} />
+            <path d="M 480 100 L 520 100 L 520 150" fill="none" style={flowStyle(curPaths.path_d1, '#22c55e')} />
+
+            <path d="M 345 200 L 410 200" fill="none" style={flowStyle(curPaths.path_d2, '#ec4899')} />
+            <path d="M 480 200 L 520 200 L 520 150" fill="none" style={flowStyle(curPaths.path_d2, '#ec4899')} />
+
+            {/* LC Output Filter & Load */}
+            <path
+              d="M 520 150 Q 535 135 550 150 Q 565 135 580 150 L 640 150"
+              fill="none"
+              stroke="#38bdf8"
+              strokeWidth="2.5"
+            />
+            <rect x="640" y="115" width="50" height="70" rx="6" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
+            <text x="665" y="145" fill="#e2e8f0" fontSize="10" fontWeight="bold" textAnchor="middle">
+              LOAD
+            </text>
+            <text x="665" y="160" fill="#22c55e" fontSize="9" fontWeight="bold" textAnchor="middle">
+              Vo (FB-Iso)
+            </text>
+
+            {/* Primary Switch Badges */}
+            <foreignObject x="115" y="70" width="75" height="35">
+              {getDeviceBadge('S1', currentStates['S1'], 'S1')}
+            </foreignObject>
+            <foreignObject x="115" y="175" width="75" height="35">
+              {getDeviceBadge('S4', currentStates['S4'], 'S4')}
+            </foreignObject>
+            <foreignObject x="215" y="70" width="75" height="35">
+              {getDeviceBadge('S3', currentStates['S3'], 'S3')}
+            </foreignObject>
+            <foreignObject x="215" y="175" width="75" height="35">
+              {getDeviceBadge('S2', currentStates['S2'], 'S2')}
+            </foreignObject>
+
+            {/* Secondary Diode Badges */}
+            <foreignObject x="410" y="82" width="75" height="35">
+              {getDeviceBadge('D1', currentStates['D1'], 'D1')}
+            </foreignObject>
+            <foreignObject x="410" y="182" width="75" height="35">
+              {getDeviceBadge('D2', currentStates['D2'], 'D2')}
+            </foreignObject>
+          </g>
+        )}
+
         {/* Generic Fallback for Other Topologies */}
-        {!['acdc_1ph_full_bridge', 'acdc_1ph_half_wave', 'dcdc_buck', 'dcdc_boost', 'dcac_full_bridge', 'acac_1ph_controller'].includes(
-          topology.id
-        ) && (
+        {![
+          'acdc_1ph_full_bridge',
+          'acdc_1ph_half_wave',
+          'dcdc_buck',
+          'dcdc_boost',
+          'dcdc_flyback',
+          'dcdc_forward',
+          'dcdc_push_pull_iso',
+          'dcdc_full_bridge_iso',
+          'dcac_full_bridge',
+          'acac_1ph_controller',
+        ].includes(topology.id) && (
           <g transform="translate(100, 30)">
             <rect x="40" y="40" width="520" height="220" rx="12" fill="#0f172a" stroke="#38bdf8" strokeWidth="2" strokeDasharray="4 4" />
             <text x="300" y="80" fill="#38bdf8" fontSize="16" fontWeight="bold" textAnchor="middle">

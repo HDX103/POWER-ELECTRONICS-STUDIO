@@ -53,6 +53,7 @@ export interface ControlParams {
   frequencyDivision?: 2 | 3 | 4; // For Cycloconverter
   conductionCycles?: number;     // For AC on-off controller
   extinctionCycles?: number;
+  turnsRatio?: number;           // Transformer turns ratio Ns/Np for isolated converters
 }
 
 export interface MetricResults {
