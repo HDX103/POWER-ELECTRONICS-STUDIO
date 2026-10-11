@@ -191,27 +191,49 @@ export function SchematicView({
         {/* ================= 4. AC-DC 3-PHASE HALF WAVE ================= */}
         {topology.id === 'acdc_3ph_half_wave' && (
           <g transform="translate(30, 20)">
-            <text x="50" y="70" fill="#ef4444" fontSize="11" fontWeight="bold">Va</text>
-            <text x="50" y="160" fill="#eab308" fontSize="11" fontWeight="bold">Vb</text>
-            <text x="50" y="250" fill="#3b82f6" fontSize="11" fontWeight="bold">Vc</text>
-            <text x="50" y="290" fill="#94a3b8" fontSize="10">Neutral (N)</text>
+            {/* 3-Phase Star Source with AC symbols */}
+            <g transform="translate(70, 75)">
+              <circle cx="0" cy="0" r="16" fill="#0f172a" stroke="#ef4444" strokeWidth="2" />
+              <path d="M-8 0 q4 -6 8 0 t8 0" stroke="#ef4444" strokeWidth="1.5" fill="none" />
+              <text x="-26" y="4" fill="#ef4444" fontSize="11" fontWeight="bold">Va</text>
+            </g>
+            <g transform="translate(70, 145)">
+              <circle cx="0" cy="0" r="16" fill="#0f172a" stroke="#eab308" strokeWidth="2" />
+              <path d="M-8 0 q4 -6 8 0 t8 0" stroke="#eab308" strokeWidth="1.5" fill="none" />
+              <text x="-26" y="4" fill="#eab308" fontSize="11" fontWeight="bold">Vb</text>
+            </g>
+            <g transform="translate(70, 215)">
+              <circle cx="0" cy="0" r="16" fill="#0f172a" stroke="#3b82f6" strokeWidth="2" />
+              <path d="M-8 0 q4 -6 8 0 t8 0" stroke="#3b82f6" strokeWidth="1.5" fill="none" />
+              <text x="-26" y="4" fill="#3b82f6" fontSize="11" fontWeight="bold">Vc</text>
+            </g>
 
-            <path d="M 70 65 L 200 65 L 200 90" fill="none" stroke="#ef4444" strokeWidth="2" />
-            <path d="M 70 155 L 300 155 L 300 120" fill="none" stroke="#eab308" strokeWidth="2" />
-            <path d="M 70 245 L 400 245 L 400 150" fill="none" stroke="#3b82f6" strokeWidth="2" />
+            {/* Neutral Busbar */}
+            <path d="M 70 91 L 70 270 L 530 270 L 530 200" fill="none" stroke="#64748b" strokeWidth="2" />
+            <text x="75" y="260" fill="#94a3b8" fontSize="10">Neutral (N)</text>
 
-            {/* Common Cathode Rail */}
-            <path d="M 200 50 L 520 50 L 520 120" fill="none" style={flowStyle(true, '#22c55e')} />
-            {/* Neutral Return */}
-            <path d="M 520 200 L 520 285 L 70 285" fill="none" stroke="#64748b" strokeWidth="2" />
+            {/* Horizontal feeds through each switch */}
+            <path d="M 86 75 L 220 75" fill="none" stroke="#ef4444" strokeWidth="2" />
+            <path d="M 260 75 L 420 75 L 420 120 L 530 120" fill="none" style={flowStyle(true, '#22c55e')} />
 
-            <rect x="495" y="120" width="50" height="80" rx="6" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
-            <text x="520" y="152" fill="#e2e8f0" fontSize="11" fontWeight="bold" textAnchor="middle">LOAD</text>
-            <text x="520" y="170" fill="#22c55e" fontSize="10" fontWeight="bold" textAnchor="middle">+ Vo -</text>
+            <path d="M 86 145 L 220 145" fill="none" stroke="#eab308" strokeWidth="2" />
+            <path d="M 260 145 L 360 145 L 360 75" fill="none" style={flowStyle(true, '#22c55e')} />
 
-            {renderSwitch('T1', 200, 75, 'vertical', 'reverse')}
-            {renderSwitch('T2', 300, 75, 'vertical', 'reverse')}
-            {renderSwitch('T3', 400, 75, 'vertical', 'reverse')}
+            <path d="M 86 215 L 220 215" fill="none" stroke="#3b82f6" strokeWidth="2" />
+            <path d="M 260 215 L 390 215 L 390 75" fill="none" style={flowStyle(true, '#22c55e')} />
+
+            {/* Common Cathode Junction */}
+            <circle cx="420" cy="75" r="3.5" fill="#22c55e" />
+
+            {/* Load */}
+            <rect x="505" y="120" width="50" height="80" rx="6" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
+            <text x="530" y="152" fill="#e2e8f0" fontSize="11" fontWeight="bold" textAnchor="middle">LOAD</text>
+            <text x="530" y="170" fill="#22c55e" fontSize="10" fontWeight="bold" textAnchor="middle">+ Vo -</text>
+
+            {/* 3 switches in series with phase lines */}
+            {renderSwitch('T1', 240, 75, 'horizontal', 'forward')}
+            {renderSwitch('T2', 240, 145, 'horizontal', 'forward')}
+            {renderSwitch('T3', 240, 215, 'horizontal', 'forward')}
           </g>
         )}
 
@@ -455,32 +477,56 @@ export function SchematicView({
 
         {/* ================= 12. DC-DC FORWARD CONVERTER ================= */}
         {topology.id === 'dcdc_forward' && (
-          <g transform="translate(30, 15)">
+          <g transform="translate(25, 15)">
             <circle cx="50" cy="150" r="22" fill="#0f172a" stroke="#38bdf8" strokeWidth="2.5" />
             <text x="50" y="154" fill="#38bdf8" fontSize="11" fontWeight="bold" textAnchor="middle">Vin</text>
 
-            <path d="M 50 128 L 50 60 L 190 60 L 190 80" fill="none" style={flowStyle(curPaths.path_switch_on, '#22c55e')} />
-            <path d="M 190 140 L 190 160" fill="none" stroke="#38bdf8" strokeWidth="2" />
-            <path d="M 190 205 L 190 240 L 50 240 L 50 172" fill="none" style={flowStyle(curPaths.path_switch_on, '#22c55e')} />
+            {/* Primary Main Winding */}
+            <path d="M 50 128 L 50 50 L 190 50 L 190 70" fill="none" style={flowStyle(curPaths.path_switch_on, '#22c55e')} />
+            <path d="M 190 130 L 190 160" fill="none" stroke="#38bdf8" strokeWidth="2" />
+            <path d="M 190 210 L 190 250 L 50 250 L 50 172" fill="none" style={flowStyle(curPaths.path_switch_on, '#22c55e')} />
 
-            <line x1="215" y1="50" x2="215" y2="210" stroke="#64748b" strokeWidth="2" strokeDasharray="3 3" />
-            <line x1="220" y1="50" x2="220" y2="210" stroke="#64748b" strokeWidth="2" strokeDasharray="3 3" />
+            {/* Primary Inductor Winding N1 */}
+            <path d="M 190 70 Q 170 85 190 95 Q 170 105 190 115 L 190 130" fill="none" stroke="#38bdf8" strokeWidth="2.5" />
+            <circle cx="172" cy="74" r="3.5" fill="#eab308" />
+            <text x="160" y="95" fill="#94a3b8" fontSize="10">Np</text>
 
-            <path d="M 240 60 L 320 60" fill="none" style={flowStyle(curPaths.path_switch_on, '#22c55e')} />
+            {/* Tertiary Core Reset Winding N_rst */}
+            <path d="M 130 90 Q 110 105 130 115 Q 110 125 130 135 L 130 150" fill="none" stroke="#38bdf8" strokeWidth="2" />
+            <circle cx="112" cy="94" r="3.5" fill="#eab308" />
+            <text x="100" y="115" fill="#94a3b8" fontSize="9">Nrst</text>
+            <path d="M 130 90 L 130 70 L 50 70" fill="none" stroke="#64748b" strokeWidth="1.5" />
+            <path d="M 130 150 L 130 170" fill="none" stroke="#64748b" strokeWidth="1.5" />
+            <path d="M 130 210 L 130 250" fill="none" stroke="#64748b" strokeWidth="1.5" />
+
+            {/* Transformer Ferrite Core Barrier */}
+            <line x1="210" y1="40" x2="210" y2="220" stroke="#64748b" strokeWidth="2" strokeDasharray="3 3" />
+            <line x1="215" y1="40" x2="215" y2="220" stroke="#64748b" strokeWidth="2" strokeDasharray="3 3" />
+            <text x="212" y="30" fill="#94a3b8" fontSize="10" fontWeight="bold" textAnchor="middle">CORE</text>
+
+            {/* Secondary Winding Ns */}
+            <path d="M 235 60 Q 255 75 235 85 Q 255 95 235 105 L 235 120" fill="none" stroke="#38bdf8" strokeWidth="2.5" />
+            <circle cx="253" cy="64" r="3.5" fill="#eab308" />
+            <text x="260" y="85" fill="#94a3b8" fontSize="10">Ns</text>
+
+            <path d="M 235 60 L 320 60" fill="none" style={flowStyle(curPaths.path_switch_on, '#22c55e')} />
             <path d="M 380 60 L 460 60" fill="none" style={flowStyle(curPaths.path_switch_on, '#22c55e')} />
 
-            {/* Inductor L */}
+            {/* Secondary Inductor L */}
             <path d="M 460 60 Q 475 42 490 60 Q 505 42 520 60 Q 535 42 550 60 L 630 60 L 630 100" fill="none" stroke="#38bdf8" strokeWidth="2.5" />
-            <path d="M 630 180 L 630 220 L 240 220 L 240 140" fill="none" style={flowStyle(curPaths.path_switch_on || curPaths.path_diode_on, '#22c55e')} />
+            <path d="M 630 180 L 630 220 L 235 220 L 235 120" fill="none" style={flowStyle(curPaths.path_switch_on || curPaths.path_diode_on, '#22c55e')} />
 
             {/* Freewheel Diode Branch D2 */}
             <line x1="430" y1="60" x2="430" y2="220" stroke="#334155" strokeWidth="2" />
 
+            {/* Output Load */}
             <rect x="605" y="100" width="50" height="80" rx="6" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
             <text x="630" y="132" fill="#e2e8f0" fontSize="11" fontWeight="bold" textAnchor="middle">LOAD</text>
             <text x="630" y="150" fill="#22c55e" fontSize="10" fontWeight="bold" textAnchor="middle">+ Vo -</text>
 
+            {/* Forward Switches & Diodes */}
             {renderSwitch('S1', 190, 185, 'vertical', 'forward')}
+            {renderSwitch('D_reset', 130, 190, 'vertical', 'reverse')}
             {renderSwitch('D1', 350, 60, 'horizontal', 'forward')}
             {renderSwitch('D2', 430, 140, 'vertical', 'reverse')}
           </g>
@@ -516,11 +562,22 @@ export function SchematicView({
             <path d="M 290 220 L 350 220" fill="none" style={flowStyle(curPaths.path_d2, '#ec4899')} />
             <path d="M 410 220 L 480 220 L 480 120" fill="none" style={flowStyle(curPaths.path_d2, '#ec4899')} />
 
-            <path d="M 290 150 L 610 150 L 610 200" fill="none" stroke="#334155" strokeWidth="2" />
+            {/* Secondary Center Tap to Ground/Return Rail */}
+            <path d="M 290 150 L 630 150 L 630 200" fill="none" stroke="#334155" strokeWidth="2" />
+
+            {/* LC Output Filter (Inductor L + Capacitor C + Load) */}
+            <path d="M 480 80 Q 495 65 510 80 Q 525 65 540 80 Q 555 65 570 80 L 630 80 L 630 110" fill="none" stroke="#38bdf8" strokeWidth="2.5" />
+            <text x="540" y="60" fill="#94a3b8" fontSize="10" textAnchor="middle">L</text>
+
+            {/* Filter Capacitor C */}
+            <line x1="590" y1="80" x2="590" y2="150" stroke="#38bdf8" strokeWidth="2" />
+            <line x1="580" y1="110" x2="600" y2="110" stroke="#38bdf8" strokeWidth="2.5" />
+            <line x1="580" y1="118" x2="600" y2="118" stroke="#38bdf8" strokeWidth="2.5" />
+            <text x="572" y="117" fill="#94a3b8" fontSize="9">C</text>
 
             <rect x="605" y="110" width="50" height="70" rx="6" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
             <text x="630" y="140" fill="#e2e8f0" fontSize="10" fontWeight="bold" textAnchor="middle">LOAD</text>
-            <text x="630" y="156" fill="#22c55e" fontSize="9" fontWeight="bold" textAnchor="middle">Vo</text>
+            <text x="630" y="156" fill="#22c55e" fontSize="9" fontWeight="bold" textAnchor="middle">+ Vo -</text>
 
             {renderSwitch('S1', 220, 120, 'vertical', 'forward')}
             {renderSwitch('S2', 220, 205, 'vertical', 'forward')}
@@ -547,17 +604,26 @@ export function SchematicView({
             <line x1="300" y1="110" x2="300" y2="190" stroke="#38bdf8" strokeWidth="3" />
             <line x1="320" y1="80" x2="320" y2="220" stroke="#64748b" strokeWidth="2" strokeDasharray="3 3" />
             <line x1="325" y1="80" x2="325" y2="220" stroke="#64748b" strokeWidth="2" strokeDasharray="3 3" />
-            <line x1="345" y1="100" x2="345" y2="200" stroke="#38bdf8" strokeWidth="3" />
+            <line x1="345" y1="90" x2="345" y2="210" stroke="#38bdf8" strokeWidth="3" />
+            <circle cx="345" cy="150" r="3" fill="#eab308" />
 
-            <path d="M 345 100 L 410 100" fill="none" style={flowStyle(curPaths.path_d1, '#22c55e')} />
-            <path d="M 470 100 L 520 100 L 520 150" fill="none" style={flowStyle(curPaths.path_d1, '#22c55e')} />
+            {/* Secondary Rectifier Lines */}
+            <path d="M 345 90 L 410 90" fill="none" style={flowStyle(curPaths.path_d1, '#22c55e')} />
+            <path d="M 470 90 L 510 90 L 510 130" fill="none" style={flowStyle(curPaths.path_d1, '#22c55e')} />
 
-            <path d="M 345 200 L 410 200" fill="none" style={flowStyle(curPaths.path_d2, '#ec4899')} />
-            <path d="M 470 200 L 520 200 L 520 150" fill="none" style={flowStyle(curPaths.path_d2, '#ec4899')} />
+            <path d="M 345 210 L 410 210" fill="none" style={flowStyle(curPaths.path_d2, '#ec4899')} />
+            <path d="M 470 210 L 510 210 L 510 130" fill="none" style={flowStyle(curPaths.path_d2, '#ec4899')} />
+
+            {/* Secondary Center Tap Return */}
+            <path d="M 345 150 L 640 150 L 640 185" fill="none" stroke="#334155" strokeWidth="2" />
+
+            {/* Output LC Filter */}
+            <path d="M 510 130 Q 525 115 540 130 Q 555 115 570 130 L 640 130" fill="none" stroke="#38bdf8" strokeWidth="2.5" />
+            <text x="540" y="110" fill="#94a3b8" fontSize="10" textAnchor="middle">L</text>
 
             <rect x="640" y="115" width="50" height="70" rx="6" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
             <text x="665" y="145" fill="#e2e8f0" fontSize="10" fontWeight="bold" textAnchor="middle">LOAD</text>
-            <text x="665" y="160" fill="#22c55e" fontSize="9" fontWeight="bold" textAnchor="middle">Vo</text>
+            <text x="665" y="160" fill="#22c55e" fontSize="9" fontWeight="bold" textAnchor="middle">+ Vo -</text>
 
             {/* 4 Primary Switches */}
             {renderSwitch('S1', 150, 95, 'vertical', 'forward')}

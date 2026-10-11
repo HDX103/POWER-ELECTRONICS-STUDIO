@@ -192,11 +192,11 @@ export const SwitchSymbol: React.FC<SwitchSymbolProps> = ({
 
       {/* Label and Badge Overlay */}
       {showBadge && (
-        <g transform="translate(0, 18)">
+        <g transform={orientation === 'vertical' ? 'translate(22, -8)' : 'translate(0, 18)'}>
           <rect
-            x="-24"
+            x={orientation === 'vertical' ? 0 : -22}
             y="0"
-            width="48"
+            width={orientation === 'vertical' ? 36 : 44}
             height="15"
             rx="3"
             fill="#090d16"
@@ -204,7 +204,7 @@ export const SwitchSymbol: React.FC<SwitchSymbolProps> = ({
             strokeWidth="1"
           />
           <text
-            x="0"
+            x={orientation === 'vertical' ? 18 : 0}
             y="11"
             fill={selected ? '#38bdf8' : '#e2e8f0'}
             fontSize="9"
