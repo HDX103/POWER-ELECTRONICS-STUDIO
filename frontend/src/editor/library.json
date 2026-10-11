@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "categories": [
+    {"id": "passive", "label": "Passive Components"},
+    {"id": "source", "label": "Sources"},
+    {"id": "semiconductor", "label": "Semiconductor Devices"},
+    {"id": "magnetic", "label": "Magnetic Components"},
+    {"id": "control", "label": "Control Components"},
+    {"id": "measurement", "label": "Measurement"},
+    {"id": "utility", "label": "Utility"}
+  ],
+  "components": []
+}

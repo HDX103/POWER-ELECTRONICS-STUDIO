@@ -1,4 +1,5 @@
-export const API = (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:8000';
+export const API = (import.meta.env.VITE_API_URL as string) ?? '';
+
 
 export interface ParamSpec {
   key: string; label: string; unit: string; default: number | string; min: number; max: number; step: number;
@@ -33,8 +34,15 @@ export interface SweepPoint { x: number; y_sim: number | null; y_theory: number 
 async function req<T>(path: string, body?: unknown, signal?: AbortSignal): Promise<T> {
   const r = await fetch(`${API}${path}`, body === undefined ? { signal } : {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal });
-  if (!r.ok) throw new Error(`HTTP ${r.status}: ${(await r.text()).slice(0, 300)}`);
+  if (!r.ok) {
+    const ct = r.headers.get('content-type') ?? '';
+    if (ct.includes('text/html')) {
+      throw new Error('Simulation backend not reachable. Deploy FastAPI server separately or set VITE_API_URL.');
+    }
+    throw new Error(`HTTP ${r.status}: ${(await r.text()).slice(0, 300)}`);
+  }
   return r.json();
+
 }
 
 export const getTopologies = () => req<TopologySpec[]>('/api/topologies');

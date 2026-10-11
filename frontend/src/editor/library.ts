@@ -21,8 +21,18 @@ export const useLibrary = create<LibraryState>((set, get) => ({
   load: async () => {
     if (get().status === 'loading') return;
     set({ status: 'loading', error: '' });
-    try { get().setLibrary(await getComponents()); }
-    catch (e: any) { set({ status: 'error', error: String(e?.message ?? e) }); }
+    try {
+      get().setLibrary(await getComponents());
+    } catch (e: any) {
+      // Fallback: load bundled library JSON
+      try {
+        const lib = await import('./library.json');
+        // lib default export contains LibraryPayload
+        get().setLibrary(lib.default as any);
+      } catch (fallbackErr) {
+        set({ status: 'error', error: String(e?.message ?? e) + ' | fallback failed: ' + String(fallbackErr) });
+      }
+    }
   },
 }));
 

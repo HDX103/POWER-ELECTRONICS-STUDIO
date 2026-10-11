@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: './',
+  base: '/POWER-ELECTRONICS-STUDIO/',
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test-setup.ts'],
