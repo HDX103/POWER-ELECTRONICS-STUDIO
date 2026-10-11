@@ -1,0 +1,1198 @@
+{
+ "version": 1,
+ "categories": [
+  {
+   "id": "passive",
+   "label": "Passive Components"
+  },
+  {
+   "id": "source",
+   "label": "Sources"
+  },
+  {
+   "id": "semiconductor",
+   "label": "Semiconductor Devices"
+  },
+  {
+   "id": "magnetic",
+   "label": "Magnetic Components"
+  },
+  {
+   "id": "control",
+   "label": "Control Components"
+  },
+  {
+   "id": "measurement",
+   "label": "Measurement"
+  },
+  {
+   "id": "utility",
+   "label": "Utility"
+  }
+ ],
+ "components": [
+  {
+   "type": "resistor",
+   "label": "Resistor",
+   "category": "passive",
+   "pins": [
+    "p",
+    "n"
+   ],
+   "params": [
+    {
+     "key": "resistance",
+     "label": "Resistance",
+     "kind": "number",
+     "unit": "\u03a9",
+     "default": 10.0,
+     "min": 1e-09,
+     "max": null,
+     "group": "main",
+     "log": true,
+     "doc": ""
+    }
+   ],
+   "signals": [],
+   "prefix": "R",
+   "symbol": "resistor",
+   "solver": "resistor",
+   "status": "implemented",
+   "description": "Linear resistor.",
+   "aliases": []
+  },
+  {
+   "type": "capacitor",
+   "label": "Capacitor",
+   "category": "passive",
+   "pins": [
+    "p",
+    "n"
+   ],
+   "params": [
+    {
+     "key": "capacitance",
+     "label": "Capacitance",
+     "kind": "number",
+     "unit": "F",
+     "default": 0.0001,
+     "min": 1e-15,
+     "max": null,
+     "group": "main",
+     "log": true,
+     "doc": ""
+    },
+    {
+     "key": "v0",
+     "label": "Initial voltage",
+     "kind": "number",
+     "unit": "V",
+     "default": 0.0,
+     "min": null,
+     "max": null,
+     "group": "initial",
+     "log": false,
+     "doc": ""
+    }
+   ],
+   "signals": [],
+   "prefix": "C",
+   "symbol": "capacitor",
+   "solver": "capacitor",
+   "status": "implemented",
+   "description": "Linear capacitor. Initial voltage is v(p) \u2212 v(n).",
+   "aliases": []
+  },
+  {
+   "type": "inductor",
+   "label": "Inductor",
+   "category": "passive",
+   "pins": [
+    "p",
+    "n"
+   ],
+   "params": [
+    {
+     "key": "inductance",
+     "label": "Inductance",
+     "kind": "number",
+     "unit": "H",
+     "default": 0.0001,
+     "min": 1e-15,
+     "max": null,
+     "group": "main",
+     "log": true,
+     "doc": ""
+    },
+    {
+     "key": "i0",
+     "label": "Initial current",
+     "kind": "number",
+     "unit": "A",
+     "default": 0.0,
+     "min": null,
+     "max": null,
+     "group": "initial",
+     "log": false,
+     "doc": ""
+    }
+   ],
+   "signals": [],
+   "prefix": "L",
+   "symbol": "inductor",
+   "solver": "inductor",
+   "status": "implemented",
+   "description": "Linear inductor. Initial current flows p \u2192 n.",
+   "aliases": []
+  },
+  {
+   "type": "dc_voltage_source",
+   "label": "DC voltage source",
+   "category": "source",
+   "pins": [
+    "p",
+    "n"
+   ],
+   "params": [
+    {
+     "key": "voltage",
+     "label": "Voltage",
+     "kind": "number",
+     "unit": "V",
+     "default": 12.0,
+     "min": null,
+     "max": null,
+     "group": "main",
+     "log": false,
+     "doc": ""
+    }
+   ],
+   "signals": [],
+   "prefix": "V",
+   "symbol": "dc_voltage_source",
+   "solver": "dc_voltage_source",
+   "status": "implemented",
+   "description": "Ideal DC voltage source, v(p) \u2212 v(n) = V.",
+   "aliases": [
+    "battery",
+    "vdc"
+   ]
+  },
+  {
+   "type": "ac_voltage_source",
+   "label": "AC voltage source",
+   "category": "source",
+   "pins": [
+    "p",
+    "n"
+   ],
+   "params": [
+    {
+     "key": "rms",
+     "label": "RMS voltage",
+     "kind": "number",
+     "unit": "V",
+     "default": 230.0,
+     "min": 0.0,
+     "max": null,
+     "group": "main",
+     "log": false,
+     "doc": ""
+    },
+    {
+     "key": "frequency",
+     "label": "Frequency",
+     "kind": "number",
+     "unit": "Hz",
+     "default": 50.0,
+     "min": 0.001,
+     "max": null,
+     "group": "main",
+     "log": true,
+     "doc": ""
+    },
+    {
+     "key": "phase",
+     "label": "Phase",
+     "kind": "number",
+     "unit": "\u00b0",
+     "default": 0.0,
+     "min": null,
+     "max": null,
+     "group": "main",
+     "log": false,
+     "doc": ""
+    }
+   ],
+   "signals": [],
+   "prefix": "V",
+   "symbol": "ac_voltage_source",
+   "solver": "ac_voltage_source",
+   "status": "implemented",
+   "description": "Sinusoidal voltage source (RMS amplitude).",
+   "aliases": [
+    "sine",
+    "vac"
+   ]
+  },
+  {
+   "type": "diode",
+   "label": "Diode",
+   "category": "semiconductor",
+   "pins": [
+    "anode",
+    "cathode"
+   ],
+   "params": [
+    {
+     "key": "Vf",
+     "label": "Forward voltage threshold",
+     "kind": "number",
+     "unit": "V",
+     "default": 0.0,
+     "min": 0.0,
+     "max": 50.0,
+     "group": "main",
+     "log": false,
+     "doc": ""
+    },
+    {
+     "key": "Ron",
+     "label": "On-resistance",
+     "kind": "number",
+     "unit": "\u03a9",
+     "default": 0.01,
+     "min": 1e-09,
+     "max": 1000000.0,
+     "group": "main",
+     "log": true,
+     "doc": ""
+    },
+    {
+     "key": "Roff",
+     "label": "Off-resistance",
+     "kind": "number",
+     "unit": "\u03a9",
+     "default": 10000000.0,
+     "min": 1.0,
+     "max": 1000000000000000.0,
+     "group": "main",
+     "log": true,
+     "doc": ""
+    }
+   ],
+   "signals": [],
+   "prefix": "D",
+   "symbol": "diode",
+   "solver": "diode",
+   "status": "implemented",
+   "description": "Piecewise-linear diode.",
+   "aliases": []
+  },
+  {
+   "type": "thyristor",
+   "label": "SCR",
+   "category": "semiconductor",
+   "pins": [
+    "anode",
+    "cathode"
+   ],
+   "params": [
+    {
+     "key": "Vf",
+     "label": "Forward voltage threshold",
+     "kind": "number",
+     "unit": "V",
+     "default": 0.0,
+     "min": 0.0,
+     "max": 50.0,
+     "group": "main",
+     "log": false,
+     "doc": ""
+    },
+    {
+     "key": "Ihold",
+     "label": "Holding current",
+     "kind": "number",
+     "unit": "A",
+     "default": 0.0,
+     "min": 0.0,
+     "max": null,
+     "group": "main",
+     "log": false,
+     "doc": ""
+    },
+    {
+     "key": "Ron",
+     "label": "On-resistance",
+     "kind": "number",
+     "unit": "\u03a9",
+     "default": 0.01,
+     "min": 1e-09,
+     "max": 1000000.0,
+     "group": "main",
+     "log": true,
+     "doc": ""
+    },
+    {
+     "key": "Roff",
+     "label": "Off-resistance",
+     "kind": "number",
+     "unit": "\u03a9",
+     "default": 10000000.0,
+     "min": 1.0,
+     "max": 1000000000000000.0,
+     "group": "main",
+     "log": true,
+     "doc": ""
+    }
+   ],
+   "signals": [
+    {
+     "key": "gate",
+     "label": "Gate signal",
+     "doc": "Name of the control signal driving this device"
+    }
+   ],
+   "prefix": "T",
+   "symbol": "thyristor",
+   "solver": "thyristor",
+   "status": "implemented",
+   "description": "Latches on when gated and forward biased.",
+   "aliases": [
+    "thyristor"
+   ]
+  },
+  {
+   "type": "mosfet",
+   "label": "MOSFET",
+   "category": "semiconductor",
+   "pins": [
+    "drain",
+    "source"
+   ],
+   "params": [
+    {
+     "key": "Ron",
+     "label": "On-resistance",
+     "kind": "number",
+     "unit": "\u03a9",
+     "default": 0.01,
+     "min": 1e-09,
+     "max": 1000000.0,
+     "group": "main",
+     "log": true,
+     "doc": ""
+    },
+    {
+     "key": "Roff",
+     "label": "Off-resistance",
+     "kind": "number",
+     "unit": "\u03a9",
+     "default": 10000000.0,
+     "min": 1.0,
+     "max": 1000000000000000.0,
+     "group": "main",
+     "log": true,
+     "doc": ""
+    }
+   ],
+   "signals": [
+    {
+     "key": "gate",
+     "label": "Gate signal",
+     "doc": "Name of the control signal driving this device"
+    }
+   ],
+   "prefix": "M",
+   "symbol": "mosfet",
+   "solver": "mosfet",
+   "status": "implemented",
+   "description": "Gate-controlled switch (no body diode: add one explicitly).",
+   "aliases": []
+  },
+  {
+   "type": "igbt",
+   "label": "IGBT",
+   "category": "semiconductor",
+   "pins": [
+    "collector",
+    "emitter"
+   ],
+   "params": [
+    {
+     "key": "Ron",
+     "label": "On-resistance",
+     "kind": "number",
+     "unit": "\u03a9",
+     "default": 0.01,
+     "min": 1e-09,
+     "max": 1000000.0,
+     "group": "main",
+     "log": true,
+     "doc": ""
+    },
+    {
+     "key": "Roff",
+     "label": "Off-resistance",
+     "kind": "number",
+     "unit": "\u03a9",
+     "default": 10000000.0,
+     "min": 1.0,
+     "max": 1000000000000000.0,
+     "group": "main",
+     "log": true,
+     "doc": ""
+    }
+   ],
+   "signals": [
+    {
+     "key": "gate",
+     "label": "Gate signal",
+     "doc": "Name of the control signal driving this device"
+    }
+   ],
+   "prefix": "Q",
+   "symbol": "igbt",
+   "solver": "igbt",
+   "status": "implemented",
+   "description": "Gate-controlled switch.",
+   "aliases": []
+  },
+  {
+   "type": "ideal_switch",
+   "label": "Ideal switch",
+   "category": "semiconductor",
+   "pins": [
+    "p",
+    "n"
+   ],
+   "params": [
+    {
+     "key": "Ron",
+     "label": "On-resistance",
+     "kind": "number",
+     "unit": "\u03a9",
+     "default": 0.01,
+     "min": 1e-09,
+     "max": 1000000.0,
+     "group": "main",
+     "log": true,
+     "doc": ""
+    },
+    {
+     "key": "Roff",
+     "label": "Off-resistance",
+     "kind": "number",
+     "unit": "\u03a9",
+     "default": 10000000.0,
+     "min": 1.0,
+     "max": 1000000000000000.0,
+     "group": "main",
+     "log": true,
+     "doc": ""
+    }
+   ],
+   "signals": [
+    {
+     "key": "gate",
+     "label": "Gate signal",
+     "doc": "Name of the control signal driving this device"
+    }
+   ],
+   "prefix": "S",
+   "symbol": "switch",
+   "solver": "ideal_switch",
+   "status": "implemented",
+   "description": "Controlled switch.",
+   "aliases": []
+  },
+  {
+   "type": "variable_resistor",
+   "label": "Variable resistor",
+   "category": "passive",
+   "pins": [
+    "p",
+    "n"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "R",
+   "symbol": "variable_resistor",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "potentiometer",
+   "label": "Potentiometer",
+   "category": "passive",
+   "pins": [
+    "a",
+    "wiper",
+    "b"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "RV",
+   "symbol": "potentiometer",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "pulse_voltage_source",
+   "label": "Pulse voltage source",
+   "category": "source",
+   "pins": [
+    "p",
+    "n"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "V",
+   "symbol": "pulse_voltage_source",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "pwl_voltage_source",
+   "label": "PWL voltage source",
+   "category": "source",
+   "pins": [
+    "p",
+    "n"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "V",
+   "symbol": "pwl_voltage_source",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "dc_current_source",
+   "label": "DC current source",
+   "category": "source",
+   "pins": [
+    "p",
+    "n"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "I",
+   "symbol": "dc_current_source",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "ac_current_source",
+   "label": "AC current source",
+   "category": "source",
+   "pins": [
+    "p",
+    "n"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "I",
+   "symbol": "ac_current_source",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "pulse_current_source",
+   "label": "Pulse current source",
+   "category": "source",
+   "pins": [
+    "p",
+    "n"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "I",
+   "symbol": "pulse_current_source",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "three_phase_source",
+   "label": "Three-phase source",
+   "category": "source",
+   "pins": [
+    "a",
+    "b",
+    "c",
+    "n"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "V",
+   "symbol": "three_phase_source",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "schottky_diode",
+   "label": "Schottky diode",
+   "category": "semiconductor",
+   "pins": [
+    "anode",
+    "cathode"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "D",
+   "symbol": "schottky_diode",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "zener_diode",
+   "label": "Zener diode",
+   "category": "semiconductor",
+   "pins": [
+    "anode",
+    "cathode"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "D",
+   "symbol": "zener_diode",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "bjt",
+   "label": "BJT",
+   "category": "semiconductor",
+   "pins": [
+    "collector",
+    "base",
+    "emitter"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "Q",
+   "symbol": "bjt",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "jfet",
+   "label": "JFET",
+   "category": "semiconductor",
+   "pins": [
+    "drain",
+    "gate",
+    "source"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "J",
+   "symbol": "jfet",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "triac",
+   "label": "TRIAC",
+   "category": "semiconductor",
+   "pins": [
+    "mt1",
+    "mt2"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "T",
+   "symbol": "triac",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "gto",
+   "label": "GTO",
+   "category": "semiconductor",
+   "pins": [
+    "anode",
+    "cathode"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "T",
+   "symbol": "gto",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "sic_mosfet",
+   "label": "SiC MOSFET",
+   "category": "semiconductor",
+   "pins": [
+    "drain",
+    "source"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "M",
+   "symbol": "sic_mosfet",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "gan_hemt",
+   "label": "GaN HEMT",
+   "category": "semiconductor",
+   "pins": [
+    "drain",
+    "source"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "M",
+   "symbol": "gan_hemt",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "transformer",
+   "label": "Transformer",
+   "category": "magnetic",
+   "pins": [
+    "p1",
+    "p2",
+    "s1",
+    "s2"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "T",
+   "symbol": "transformer",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "coupled_inductors",
+   "label": "Coupled inductors",
+   "category": "magnetic",
+   "pins": [
+    "p1",
+    "p2",
+    "s1",
+    "s2"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "K",
+   "symbol": "coupled_inductors",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "mutual_inductance",
+   "label": "Mutual inductance",
+   "category": "magnetic",
+   "pins": [
+    "p1",
+    "p2",
+    "s1",
+    "s2"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "K",
+   "symbol": "mutual_inductance",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "saturating_inductor",
+   "label": "Saturating inductor",
+   "category": "magnetic",
+   "pins": [
+    "p",
+    "n"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "L",
+   "symbol": "saturating_inductor",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "comparator",
+   "label": "Comparator",
+   "category": "control",
+   "pins": [],
+   "params": [],
+   "signals": [],
+   "prefix": "U",
+   "symbol": "comparator",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "gain",
+   "label": "Gain",
+   "category": "control",
+   "pins": [],
+   "params": [],
+   "signals": [],
+   "prefix": "U",
+   "symbol": "gain",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "sum",
+   "label": "Sum",
+   "category": "control",
+   "pins": [],
+   "params": [],
+   "signals": [],
+   "prefix": "U",
+   "symbol": "sum",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "integrator",
+   "label": "Integrator",
+   "category": "control",
+   "pins": [],
+   "params": [],
+   "signals": [],
+   "prefix": "U",
+   "symbol": "integrator",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "differentiator",
+   "label": "Differentiator",
+   "category": "control",
+   "pins": [],
+   "params": [],
+   "signals": [],
+   "prefix": "U",
+   "symbol": "differentiator",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "pi_controller",
+   "label": "PI controller",
+   "category": "control",
+   "pins": [],
+   "params": [],
+   "signals": [],
+   "prefix": "U",
+   "symbol": "pi_controller",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "pid_controller",
+   "label": "PID controller",
+   "category": "control",
+   "pins": [],
+   "params": [],
+   "signals": [],
+   "prefix": "U",
+   "symbol": "pid_controller",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "limiter",
+   "label": "Limiter",
+   "category": "control",
+   "pins": [],
+   "params": [],
+   "signals": [],
+   "prefix": "U",
+   "symbol": "limiter",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "saturation",
+   "label": "Saturation",
+   "category": "control",
+   "pins": [],
+   "params": [],
+   "signals": [],
+   "prefix": "U",
+   "symbol": "saturation",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "pwm_generator",
+   "label": "PWM generator",
+   "category": "control",
+   "pins": [],
+   "params": [],
+   "signals": [],
+   "prefix": "U",
+   "symbol": "pwm_generator",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "spwm_generator",
+   "label": "SPWM generator",
+   "category": "control",
+   "pins": [],
+   "params": [],
+   "signals": [],
+   "prefix": "U",
+   "symbol": "spwm_generator",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "svpwm_generator",
+   "label": "SVPWM generator",
+   "category": "control",
+   "pins": [],
+   "params": [],
+   "signals": [],
+   "prefix": "U",
+   "symbol": "svpwm_generator",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "triangle_carrier",
+   "label": "Triangle carrier",
+   "category": "control",
+   "pins": [],
+   "params": [],
+   "signals": [],
+   "prefix": "U",
+   "symbol": "triangle_carrier",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "sawtooth_carrier",
+   "label": "Sawtooth carrier",
+   "category": "control",
+   "pins": [],
+   "params": [],
+   "signals": [],
+   "prefix": "U",
+   "symbol": "sawtooth_carrier",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "hysteresis_controller",
+   "label": "Hysteresis controller",
+   "category": "control",
+   "pins": [],
+   "params": [],
+   "signals": [],
+   "prefix": "U",
+   "symbol": "hysteresis_controller",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "voltage_probe",
+   "label": "Voltage probe",
+   "category": "measurement",
+   "pins": [
+    "p",
+    "n"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "VP",
+   "symbol": "voltage_probe",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "current_probe",
+   "label": "Current probe",
+   "category": "measurement",
+   "pins": [
+    "p",
+    "n"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "IP",
+   "symbol": "current_probe",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "power_probe",
+   "label": "Power probe",
+   "category": "measurement",
+   "pins": [
+    "p",
+    "n"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "PP",
+   "symbol": "power_probe",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "differential_probe",
+   "label": "Differential voltage probe",
+   "category": "measurement",
+   "pins": [
+    "p",
+    "n"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "DP",
+   "symbol": "differential_probe",
+   "solver": null,
+   "status": "planned",
+   "description": "Planned: not simulatable yet.",
+   "aliases": []
+  },
+  {
+   "type": "ground",
+   "label": "Ground",
+   "category": "utility",
+   "pins": [
+    "g"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "GND",
+   "symbol": "ground",
+   "solver": null,
+   "status": "schematic",
+   "description": "Reference node (0). Compiled away into net \"0\".",
+   "aliases": []
+  },
+  {
+   "type": "net_label",
+   "label": "Net label",
+   "category": "utility",
+   "pins": [
+    "n"
+   ],
+   "params": [
+    {
+     "key": "name",
+     "label": "Net name",
+     "kind": "string",
+     "unit": "",
+     "default": "N1",
+     "group": "main",
+     "doc": ""
+    }
+   ],
+   "signals": [],
+   "prefix": "NL",
+   "symbol": "net_label",
+   "solver": null,
+   "status": "schematic",
+   "description": "Names a net; same-named labels are the same net.",
+   "aliases": []
+  },
+  {
+   "type": "junction",
+   "label": "Junction",
+   "category": "utility",
+   "pins": [
+    "j"
+   ],
+   "params": [],
+   "signals": [],
+   "prefix": "J",
+   "symbol": "junction",
+   "solver": null,
+   "status": "schematic",
+   "description": "Explicit wire junction.",
+   "aliases": []
+  }
+ ]
+}

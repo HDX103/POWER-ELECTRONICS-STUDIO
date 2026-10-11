@@ -1,4 +1,3 @@
-# POWER-ELECTRONICS-STUDIO
 # Power Electronics Studio ⚡
 
 An interactive, full-featured web-based power electronics converter simulator and analysis workbench designed to run directly in the browser and deploy seamlessly to GitHub Pages.
